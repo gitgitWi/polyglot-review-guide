@@ -2,7 +2,7 @@
   border: 1px solid var(--hairline);
   background: var(--surface-card);
   border-radius: 12px;
-  padding: 22px 24px 18px !important;
+  padding: 20px 24px !important;
   margin-bottom: 12px;
 }
 
@@ -26,6 +26,7 @@
 
 .tocItem {
   line-height: 1.45;
+  margin-bottom: 0 !important;
 }
 
 .level2 {
