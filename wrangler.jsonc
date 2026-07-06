@@ -2,13 +2,10 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "polyglot-review-guide",
   "compatibility_date": "2026-07-06",
-  // Static-assets-only deployment: serve the Vite `dist/` output.
-  "assets": {
-    "directory": "dist",
-    // SPA fallback: serve index.html (HTTP 200) for client-routed paths such as
-    // /guide/:id and /tags/:tag. This replaces the `_redirects` `/* /index.html 200`
-    // rule, which the Workers static-assets platform rejects as an infinite loop
-    // (serving /index.html normalizes back to / and re-matches the /* rule).
-    "not_found_handling": "single-page-application"
-  }
+  "compatibility_flags": ["nodejs_compat"],
+  // TanStack Start server entry. `vite build` (with @cloudflare/vite-plugin)
+  // produces the Worker + prerendered static assets; routing (incl. SSR fallback
+  // for any non-prerendered path) is owned by Start, so no _redirects / SPA
+  // not_found_handling is needed.
+  "main": "@tanstack/react-start/server-entry"
 }

@@ -1,9 +1,9 @@
 import { BookOpen, Menu, Sparkles } from "lucide-react";
-import type { GuideDoc } from "../../generated/guide-data";
+import type { ShellDoc } from "../app-shell";
 import styles from "./topbar.module.css";
 
 interface TopbarProps {
-  currentDoc: GuideDoc;
+  currentDoc: ShellDoc;
   activeTab: "guide" | "quiz";
   onTabChange: (tab: "guide" | "quiz") => void;
   onMenuOpen: () => void;

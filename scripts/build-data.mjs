@@ -1,6 +1,8 @@
 import { readdir, readFile, writeFile, mkdir, rm } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { Marked } from "marked";
+import { codeToHtml } from "shiki";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const docsDir = path.join(root, "docs");
@@ -8,8 +10,28 @@ const outDir = path.join(root, "src", "generated");
 const outFile = path.join(outDir, "guide-data.ts");
 const bodiesDir = path.join(outDir, "bodies");
 
-// Parse a front-matter list value such as `[null-safety, "smart cast"]` into a
-// normalized, lowercased string array. Accepts quoted or unquoted items.
+const SHIKI_THEME = "github-dark";
+const LANG_ALIASES = {
+  js: "javascript",
+  jsx: "jsx",
+  ts: "typescript",
+  tsx: "tsx",
+  kt: "kotlin",
+  kotlin: "kotlin",
+  go: "go",
+  golang: "go",
+  sh: "shellscript",
+  shell: "shellscript",
+  bash: "shellscript",
+  yaml: "yaml",
+  yml: "yaml",
+  json: "json",
+  md: "markdown",
+  markdown: "markdown",
+};
+
+// --- front matter -----------------------------------------------------------
+
 function parseTags(raw) {
   if (!raw) {
     return [];
@@ -58,6 +80,86 @@ function parseFrontMatter(raw, file) {
   return { meta, body };
 }
 
+// --- markdown → HTML (build time) -------------------------------------------
+
+function slugify(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^\wㄱ-ㅎㅏ-ㅣ가-힣]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+// Match the heading-id logic the client ToC used: strip inline markers then slug.
+function headingId(rawText) {
+  return slugify(rawText.replace(/[*_`]/g, ""));
+}
+
+function escapeHtml(text) {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+// A Marked instance that highlights code with Shiki at build time and wraps it
+// in the same `.code-frame` / `.code-label` markup the runtime component used,
+// so the existing CSS keeps working. Headings get slug ids; the leading H1 is
+// dropped (the Topbar renders the document title).
+function createMarked() {
+  const marked = new Marked({
+    async: true,
+    async walkTokens(token) {
+      if (token.type !== "code") {
+        return;
+      }
+      const lang = LANG_ALIASES[(token.lang || "").trim().toLowerCase()] ?? "text";
+      try {
+        token.highlighted = await codeToHtml(token.text, { lang, theme: SHIKI_THEME });
+      } catch {
+        token.highlighted = `<pre class="shiki"><code>${escapeHtml(token.text)}</code></pre>`;
+      }
+    },
+    renderer: {
+      code(token) {
+        const label = (token.lang || "text").trim() || "text";
+        const body = token.highlighted ?? `<pre class="shiki"><code>${escapeHtml(token.text)}</code></pre>`;
+        return `<div class="code-frame"><div class="code-label"><span>${escapeHtml(label)}</span></div>${body}</div>`;
+      },
+      heading(token) {
+        if (token.depth === 1) {
+          return ""; // hidden: shown in the Topbar
+        }
+        const inner = this.parser.parseInline(token.tokens);
+        return `<h${token.depth} id="${headingId(token.text)}">${inner}</h${token.depth}>`;
+      },
+    },
+    // Wrap tables for the existing `.table-wrap` overflow container CSS.
+    hooks: {
+      postprocess(html) {
+        return html
+          .replace(/<table>/g, '<div class="table-wrap"><table>')
+          .replace(/<\/table>/g, "</table></div>");
+      },
+    },
+  });
+  return marked;
+}
+
+function extractToc(body) {
+  const toc = [];
+  for (const line of body.split("\n")) {
+    const match = line.match(/^(##|###)\s+(.+)$/);
+    if (match) {
+      const level = match[1].length;
+      const rawText = match[2].trim().replace(/[*_`]/g, "");
+      toc.push({ text: rawText, id: slugify(rawText), level });
+    }
+  }
+  return toc;
+}
+
+// --- build ------------------------------------------------------------------
+
 const files = (await readdir(docsDir)).filter((file) => file.endsWith(".md")).sort();
 
 const docs = [];
@@ -80,22 +182,24 @@ for (const file of files) {
 
 docs.sort((a, b) => a.order - b.order || a.title.localeCompare(b.title));
 
-await mkdir(outDir, { recursive: true });
+const marked = createMarked();
 
-// Each document body is emitted as its own module so Vite can code-split it into
-// a lazy chunk (loaded via loadDocBody() only when that page is opened). Rebuild
-// the directory from scratch each run so renamed/removed docs leave no orphans.
+await mkdir(outDir, { recursive: true });
 await rm(bodiesDir, { recursive: true, force: true });
 await mkdir(bodiesDir, { recursive: true });
+
 for (const doc of docs) {
+  const html = await marked.parse(doc.body);
+  const toc = extractToc(doc.body);
   await writeFile(
     path.join(bodiesDir, `${doc.id}.ts`),
-    `// AUTO-GENERATED body for ${doc.file}. Do not edit by hand.\nexport default ${JSON.stringify(doc.body)};\n`,
+    `// AUTO-GENERATED content for ${doc.file}. Do not edit by hand.\n` +
+      `import type { DocContent } from "../guide-data";\n` +
+      `export default ${JSON.stringify({ html, toc })} satisfies DocContent;\n`,
     "utf8",
   );
 }
 
-// Only metadata (small: titles, summaries, tags) is bundled eagerly.
 const meta = docs.map((doc) => ({
   id: doc.id,
   file: doc.file,
@@ -115,10 +219,10 @@ const loaderLines = docs
 const output = `// AUTO-GENERATED by scripts/build-data.mjs. Do not edit by hand.
 // Run \`bun scripts/build-data.mjs\` (or \`bun run dev\`) to regenerate.
 //
-// Document metadata is bundled eagerly (titles, summaries, tags — small).
-// Each document body lives in ./bodies/<id>.ts and is loaded on demand via
-// loadDocBody(), so Vite emits one lazy chunk per document instead of shipping
-// every page's markdown in the initial download.
+// Markdown is rendered to HTML with Shiki-highlighted code at BUILD time. Only
+// metadata is bundled eagerly; each document's rendered { html, toc } lives in
+// ./bodies/<id>.ts and is loaded on demand via loadDocContent() — served
+// prerendered by TanStack Start, or fetched as a lazy chunk on client nav.
 
 export interface GuideDoc {
   id: string;
@@ -132,16 +236,27 @@ export interface GuideDoc {
   wordCount: number;
 }
 
+export interface TocItem {
+  text: string;
+  id: string;
+  level: number;
+}
+
+export interface DocContent {
+  html: string;
+  toc: TocItem[];
+}
+
 export const guideDocs: GuideDoc[] = ${JSON.stringify(meta, null, 2)};
 
-const bodyLoaders: Record<string, () => Promise<{ default: string }>> = {
+const contentLoaders: Record<string, () => Promise<{ default: DocContent }>> = {
 ${loaderLines}
 };
 
-/** Lazily load a document's rendered markdown body. Resolves to "" for unknown ids. */
-export function loadDocBody(id: string): Promise<string> {
-  const loader = bodyLoaders[id];
-  return loader ? loader().then((mod) => mod.default) : Promise.resolve("");
+/** Lazily load a document's prerendered HTML + ToC. Resolves to empty for unknown ids. */
+export function loadDocContent(id: string): Promise<DocContent> {
+  const loader = contentLoaders[id];
+  return loader ? loader().then((mod) => mod.default) : Promise.resolve({ html: "", toc: [] });
 }
 `;
 
@@ -149,5 +264,5 @@ await writeFile(outFile, output, "utf8");
 
 const tagSet = new Set(docs.flatMap((doc) => doc.tags));
 console.log(
-  `Generated ${path.relative(root, outFile)} + ${docs.length} body chunks (${tagSet.size} unique tags)`,
+  `Generated ${path.relative(root, outFile)} + ${docs.length} prerendered body chunks (${tagSet.size} unique tags)`,
 );

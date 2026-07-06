@@ -8,7 +8,7 @@ interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
   visibleDocs: GuideDoc[];
-  currentDoc: GuideDoc;
+  currentDoc: { id: string };
 }
 
 export function Sidebar({ isOpen, onClose, visibleDocs, currentDoc }: SidebarProps) {

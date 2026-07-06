@@ -5,27 +5,35 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const requiredFiles = [
   "README.md",
-  "index.html",
-  "src/main.tsx",
   "src/router.tsx",
+  "src/routes/__root.tsx",
   "src/generated/guide-data.ts",
-  "dist/index.html",
   "wrangler.jsonc",
+  // TanStack Start build output (@cloudflare/vite-plugin): prerendered client + Worker.
+  "dist/client/index.html",
+  "dist/server/index.js",
 ];
 
 for (const file of requiredFiles) {
   await access(path.join(root, file));
 }
 
-// SPA routing on Cloudflare Workers static assets is handled by
-// not_found_handling, not a `_redirects` rewrite (which the platform rejects as
-// an infinite loop). Guard against regressing that config.
+// The Worker is the TanStack Start server entry; routing (incl. SSR fallback) is
+// owned by Start, so no _redirects / not_found_handling is used. Guard the config.
 const wranglerConfig = await readFile(path.join(root, "wrangler.jsonc"), "utf8");
-if (!wranglerConfig.includes('"directory": "dist"')) {
-  throw new Error('wrangler.jsonc: assets.directory must be "dist"');
+if (!wranglerConfig.includes("@tanstack/react-start/server-entry")) {
+  throw new Error('wrangler.jsonc: main must be "@tanstack/react-start/server-entry"');
 }
-if (!wranglerConfig.includes('"not_found_handling": "single-page-application"')) {
-  throw new Error('wrangler.jsonc: assets.not_found_handling must be "single-page-application" for SPA routing');
+if (!wranglerConfig.includes("nodejs_compat")) {
+  throw new Error("wrangler.jsonc: compatibility_flags must include nodejs_compat");
+}
+
+// Prerender (SSG) sanity: a representative document page must contain rendered
+// markdown, not just an empty shell.
+const sampleDoc = path.join(root, "dist", "client", "guide", "kotlin-idioms", "index.html");
+const sampleHtml = await readFile(sampleDoc, "utf8");
+if (!sampleHtml.includes("markdown-body") || !sampleHtml.includes('class="shiki')) {
+  throw new Error("prerendered doc page is missing rendered content / highlighted code");
 }
 
 const docs = (await readdir(path.join(root, "docs"))).filter((file) => file.endsWith(".md"));
@@ -52,4 +60,4 @@ for (const file of docs) {
   seenOrders.add(order);
 }
 
-console.log(`Validated ${docs.length} Markdown files and Cloudflare deploy config`);
+console.log(`Validated ${docs.length} Markdown files, prerendered output, and Cloudflare deploy config`);
