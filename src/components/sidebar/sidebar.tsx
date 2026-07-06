@@ -17,13 +17,39 @@ export function Sidebar({ isOpen, onClose, visibleDocs, currentDoc }: SidebarPro
   const setQuery = useGuideStore((state) => state.setQuery);
   const setLanguage = useGuideStore((state) => state.setLanguage);
 
+  // Group docs by category/language
+  const docGroups = [
+    {
+      title: "Common Fundamentals",
+      docs: visibleDocs.filter(
+        (d) => d.language === "both" && d.id !== "10-ai-code-review-checklist",
+      ),
+    },
+    {
+      title: "Kotlin & Spring",
+      docs: visibleDocs.filter((d) => d.language === "kotlin"),
+    },
+    {
+      title: "Go & Systems",
+      docs: visibleDocs.filter((d) => d.language === "go"),
+    },
+    {
+      title: "AI Code Audit",
+      docs: visibleDocs.filter((d) => d.id === "10-ai-code-review-checklist"),
+    },
+  ].filter((g) => g.docs.length > 0);
+
+  const handleLangBtnClick = (lang: LanguageFilter) => {
+    setLanguage(lang);
+  };
+
   return (
     <aside
       className={`${styles.sidebar} ${isOpen ? styles.isOpen : ""}`}
       aria-label="Guide navigation"
     >
       <div className={styles.sidebarHeader}>
-        <Link to="/" className={styles.brand}>
+        <Link to="/" className={styles.brand} onClick={() => setLanguage("all")}>
           <h1 className={styles.brandTitle}>Polyglot Guide</h1>
         </Link>
         <button
@@ -38,48 +64,73 @@ export function Sidebar({ isOpen, onClose, visibleDocs, currentDoc }: SidebarPro
 
       <label className={styles.searchBox}>
         <span>
-          <Search size={14} />
-          Search
+          <Search size={14} /> Search
         </span>
         <input
           type="search"
+          placeholder="가이드 검색..."
           value={query}
-          placeholder="transaction, goroutine, validation"
-          onChange={(event) => setQuery(event.target.value)}
+          onChange={(e) => setQuery(e.target.value)}
         />
       </label>
 
-      <div className={styles.filters} aria-label="Language filters">
-        {[
-          ["all", "All"],
-          ["kotlin", "Kotlin"],
-          ["go", "Go"],
-          ["both", "Both"],
-        ].map(([value, label]) => (
-          <button
-            className={language === value ? styles.isActive : ""}
-            key={value}
-            type="button"
-            onClick={() => setLanguage(value as LanguageFilter)}
-          >
-            {label}
-          </button>
-        ))}
+      <div className={styles.filters} role="group" aria-label="Language Filters">
+        <button
+          className={`${styles.isActive && language === "all" ? styles.isActive : ""}`}
+          type="button"
+          onClick={() => handleLangBtnClick("all")}
+        >
+          All
+        </button>
+        <button
+          className={`${styles.isActive && language === "kotlin" ? styles.isActive : ""}`}
+          type="button"
+          onClick={() => handleLangBtnClick("kotlin")}
+        >
+          Kotlin
+        </button>
+        <button
+          className={`${styles.isActive && language === "go" ? styles.isActive : ""}`}
+          type="button"
+          onClick={() => handleLangBtnClick("go")}
+        >
+          Go
+        </button>
+        <button
+          className={`${styles.isActive && language === "both" ? styles.isActive : ""}`}
+          type="button"
+          onClick={() => handleLangBtnClick("both")}
+        >
+          Both
+        </button>
       </div>
 
-      <nav className={styles.docList} aria-label="Documents">
-        {visibleDocs.map((doc) => (
-          <Link
-            className={`${styles.docLink} ${doc.id === currentDoc.id ? styles.isSelected : ""}`}
-            key={doc.id}
-            params={{ docId: doc.id }}
-            to="/guide/$docId"
-          >
-            <span className={styles.docLinkTitle}>{doc.title}</span>
-            <span className={styles.docLinkSummary}>{doc.summary}</span>
-          </Link>
-        ))}
-        {visibleDocs.length === 0 ? <p className={styles.empty}>No matching documents.</p> : null}
+      <nav className={styles.docNavigation}>
+        {docGroups.length > 0 ? (
+          docGroups.map((group) => (
+            <div key={group.title} className={styles.groupContainer}>
+              <h2 className={styles.groupTitle}>{group.title}</h2>
+              <div className={styles.docList}>
+                {group.docs.map((doc) => {
+                  const isSelected = currentDoc.id === doc.id;
+                  return (
+                    <Link
+                      key={doc.id}
+                      to="/guide/$docId"
+                      params={{ docId: doc.id }}
+                      className={`${styles.docLink} ${isSelected ? styles.isSelected : ""}`}
+                    >
+                      <span className={styles.docLinkTitle}>{doc.title}</span>
+                      <span className={styles.docLinkSummary}>{doc.summary}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className={styles.empty}>검색 결과가 없습니다.</p>
+        )}
       </nav>
     </aside>
   );

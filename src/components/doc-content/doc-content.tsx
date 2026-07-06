@@ -22,9 +22,12 @@ const renderer = {
 };
 
 export function DocContent({ currentDoc, isRendering }: DocContentProps) {
+  // Remove the first H1 header line from markdown body to avoid duplication with Topbar title
+  const cleanBody = currentDoc.body.replace(/^#\s+.+$/m, "");
+
   return (
     <article aria-busy={isRendering} className="doc-content">
-      <Markdown value={currentDoc.body} renderer={renderer} />
+      <Markdown value={cleanBody} renderer={renderer} />
     </article>
   );
 }

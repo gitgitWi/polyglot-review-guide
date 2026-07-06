@@ -69,6 +69,7 @@ const homeMetaDoc: GuideDoc = {
 function GuideShell({ selectedDoc, isHome = false }: { selectedDoc?: GuideDoc; isHome?: boolean }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"guide" | "quiz">("guide");
+  const [isShrunk, setIsShrunk] = useState(false);
 
   const query = useGuideStore((state) => state.query);
   const language = useGuideStore((state) => state.language);
@@ -80,10 +81,19 @@ function GuideShell({ selectedDoc, isHome = false }: { selectedDoc?: GuideDoc; i
       ? selectedDoc
       : (visibleDocs[0] ?? selectedDoc ?? homeMetaDoc);
 
-  // Close sidebar and reset tab to guide when route/doc changes
+  const handleScroll = (e: React.UIEvent<HTMLElement>) => {
+    setIsShrunk(e.currentTarget.scrollTop > 24);
+  };
+
+  // Reset scroll to top and state when route/doc changes
   useEffect(() => {
     setIsSidebarOpen(false);
     setActiveTab("guide");
+    setIsShrunk(false);
+    const contentShell = document.querySelector(".content-shell");
+    if (contentShell) {
+      contentShell.scrollTop = 0;
+    }
   }, [selectedDoc, isHome]);
 
   return (
@@ -106,12 +116,13 @@ function GuideShell({ selectedDoc, isHome = false }: { selectedDoc?: GuideDoc; i
       />
 
       {/* Main Content Workspace */}
-      <main className="content-shell">
+      <main className="content-shell" onScroll={handleScroll}>
         <Topbar
           currentDoc={currentDoc}
           activeTab={activeTab}
           onTabChange={setActiveTab}
           onMenuOpen={() => setIsSidebarOpen(true)}
+          isShrunk={isShrunk}
         />
 
         {isHome ? (
