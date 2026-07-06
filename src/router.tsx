@@ -128,16 +128,7 @@ function GuideShell({ selectedDoc, isHome = false }: { selectedDoc?: GuideDoc; i
         {isHome ? (
           <HomeView docs={guideDocs} />
         ) : activeTab === "guide" ? (
-          <>
-            <section className="summary-band">
-              <div>
-                <span className="text-orange-500 mr-2">✏️</span>
-                <p>{currentDoc.summary}</p>
-              </div>
-            </section>
-
-            <DocContent currentDoc={currentDoc} isRendering={false} />
-          </>
+          <DocContent currentDoc={currentDoc} isRendering={false} />
         ) : (
           <QuizView onBackToGuide={() => setActiveTab("guide")} />
         )}
