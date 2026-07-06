@@ -35,7 +35,6 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   const query = useGuideStore((s) => s.query);
   const language = useGuideStore((s) => s.language);
-  const activeTab = useGuideStore((s) => s.activeTab);
   const isSidebarOpen = useGuideStore((s) => s.isSidebarOpen);
   const setActiveTab = useGuideStore((s) => s.setActiveTab);
   const setSidebarOpen = useGuideStore((s) => s.setSidebarOpen);
@@ -82,8 +81,6 @@ export function AppShell({ children }: { children: ReactNode }) {
       <main className="content-shell">
         <Topbar
           currentDoc={currentDoc}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
           onMenuOpen={() => setSidebarOpen(true)}
           isShrunk={isShrunk}
         />
