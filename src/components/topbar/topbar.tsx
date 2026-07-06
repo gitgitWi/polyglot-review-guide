@@ -17,8 +17,8 @@ export function Topbar({
   onMenuOpen,
   isShrunk = false,
 }: TopbarProps) {
-  // If it's a home overview, we hide the tab switcher since there's no quiz for home page
-  const showTabs = currentDoc.id !== "home";
+  // Hide the tab switcher on non-document views (home overview, tag pages) since there's no quiz there.
+  const showTabs = currentDoc.id !== "home" && currentDoc.id !== "tags";
 
   return (
     <header className={`${styles.topbar} ${isShrunk ? styles.isShrunk : ""}`}>
@@ -34,11 +34,13 @@ export function Topbar({
 
         <div className={styles.titleArea}>
           <h1 className={styles.title}>{currentDoc.title}</h1>
-          <div className={styles.metaPills} aria-label="Document metadata">
-            <span>
-              <BookOpen size={12} /> {currentDoc.wordCount.toLocaleString()} words
-            </span>
-          </div>
+          {currentDoc.wordCount > 0 && (
+            <div className={styles.metaPills} aria-label="Document metadata">
+              <span>
+                <BookOpen size={12} /> {currentDoc.wordCount.toLocaleString()} words
+              </span>
+            </div>
+          )}
         </div>
       </div>
 

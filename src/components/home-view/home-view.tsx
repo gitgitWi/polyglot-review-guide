@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Tag } from "lucide-react";
 import type { GuideDoc } from "../../generated/guide-data";
 import { useGuideStore } from "../../store/guide-store";
 import styles from "./home-view.module.css";
@@ -34,6 +34,12 @@ export function HomeView({ docs }: HomeViewProps) {
               가이드 읽기 시작
               <ArrowRight size={16} />
             </Link>
+            <Link
+              to="/tags"
+              className="inline-flex h-11 items-center gap-2 rounded-lg border border-[var(--hairline-strong)] px-[18px] text-[14px] font-medium text-[var(--body)] no-underline transition-colors hover:border-[var(--orange)] hover:text-[var(--orange)]"
+            >
+              <Tag size={15} /> 태그로 탐색
+            </Link>
           </div>
         </div>
       </section>
@@ -53,7 +59,7 @@ export function HomeView({ docs }: HomeViewProps) {
             </p>
             <Link
               to="/guide/$docId"
-              params={{ docId: "07-kotlin-spring-review" }}
+              params={{ docId: "kotlin-spring-review" }}
               onClick={() => setLanguage("kotlin")}
               className={styles.cardLink}
             >
@@ -74,7 +80,7 @@ export function HomeView({ docs }: HomeViewProps) {
             </p>
             <Link
               to="/guide/$docId"
-              params={{ docId: "09-go-service-review" }}
+              params={{ docId: "go-service-review" }}
               onClick={() => setLanguage("go")}
               className={styles.cardLink}
             >
@@ -95,7 +101,7 @@ export function HomeView({ docs }: HomeViewProps) {
             </p>
             <Link
               to="/guide/$docId"
-              params={{ docId: "10-ai-code-review-checklist" }}
+              params={{ docId: "ai-code-review-checklist" }}
               onClick={() => setLanguage("both")}
               className={styles.cardLink}
             >

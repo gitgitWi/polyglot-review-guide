@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Search, X } from "lucide-react";
+import { Search, Tag, X } from "lucide-react";
 import type { GuideDoc } from "../../generated/guide-data";
 import { useGuideStore, type LanguageFilter } from "../../store/guide-store";
 import styles from "./sidebar.module.css";
@@ -22,7 +22,7 @@ export function Sidebar({ isOpen, onClose, visibleDocs, currentDoc }: SidebarPro
     {
       title: "Common Fundamentals",
       docs: visibleDocs.filter(
-        (d) => d.language === "both" && d.id !== "10-ai-code-review-checklist",
+        (d) => d.language === "both" && d.id !== "ai-code-review-checklist",
       ),
     },
     {
@@ -35,7 +35,7 @@ export function Sidebar({ isOpen, onClose, visibleDocs, currentDoc }: SidebarPro
     },
     {
       title: "AI Code Audit",
-      docs: visibleDocs.filter((d) => d.id === "10-ai-code-review-checklist"),
+      docs: visibleDocs.filter((d) => d.id === "ai-code-review-checklist"),
     },
   ].filter((g) => g.docs.length > 0);
 
@@ -104,6 +104,14 @@ export function Sidebar({ isOpen, onClose, visibleDocs, currentDoc }: SidebarPro
           Both
         </button>
       </div>
+
+      <Link
+        to="/tags"
+        onClick={onClose}
+        className="mb-5 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--mute)] no-underline transition-colors hover:text-[var(--orange)]"
+      >
+        <Tag size={13} /> Browse by tag
+      </Link>
 
       <nav className={styles.docNavigation}>
         {docGroups.length > 0 ? (
