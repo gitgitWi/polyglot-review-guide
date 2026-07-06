@@ -36,20 +36,6 @@
   max-width: 780px;
 }
 
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--surface-elevated);
-  border: 1px solid var(--hairline-strong);
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--body);
-  padding: 6px 14px;
-  margin-bottom: 28px;
-}
-
 .displayHeadline {
   font-family: var(--font-display);
   font-size: 64px;
@@ -141,40 +127,14 @@
 
 .cardLangBadge {
   display: inline-flex;
-  background: var(--orange-glow);
+  background: var(--surface-elevated);
   color: var(--orange);
-  border: 1px solid rgba(255, 128, 31, 0.2);
+  border: 1px solid var(--hairline-strong);
   border-radius: 4px;
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
-  padding: 2px 8px;
-  letter-spacing: 0.05em;
-}
-
-.cardLangBadgeGo {
-  display: inline-flex;
-  background: var(--blue-glow);
-  color: var(--blue);
-  border: 1px solid rgba(0, 117, 255, 0.2);
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  padding: 2px 8px;
-  letter-spacing: 0.05em;
-}
-
-.cardLangBadgeAi {
-  display: inline-flex;
-  background: var(--green-glow);
-  color: var(--green);
-  border: 1px solid rgba(34, 255, 153, 0.2);
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  padding: 2px 8px;
+  padding: 3px 8px;
   letter-spacing: 0.05em;
 }
 

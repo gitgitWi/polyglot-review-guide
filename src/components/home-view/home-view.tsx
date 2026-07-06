@@ -1,7 +1,7 @@
-import React from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import type { GuideDoc } from "../../generated/guide-data";
+import { useGuideStore } from "../../store/guide-store";
 import styles from "./home-view.module.css";
 
 interface HomeViewProps {
@@ -9,6 +9,8 @@ interface HomeViewProps {
 }
 
 export function HomeView({ docs }: HomeViewProps) {
+  const setLanguage = useGuideStore((state) => state.setLanguage);
+
   // Find first overview doc to link "Get Started"
   const overviewDoc = docs.find((d) => d.id.includes("overview")) ?? docs[0];
 
@@ -17,10 +19,6 @@ export function HomeView({ docs }: HomeViewProps) {
       <section className={styles.heroSection}>
         <div className={styles.accentGlow} />
         <div className={styles.heroContent}>
-          <div className={styles.badge}>
-            <Sparkles size={14} className="text-orange-500" />
-            <span>Developer Field Guide</span>
-          </div>
           <h2 className={styles.displayHeadline}>Read backend code with confidence.</h2>
           <p className={styles.heroSub}>
             TypeScript 개발자 관점에서 Kotlin과 Go의 런타임 모델, 트랜잭션, 동시성 구조를 비교
@@ -30,6 +28,7 @@ export function HomeView({ docs }: HomeViewProps) {
             <Link
               to="/guide/$docId"
               params={{ docId: overviewDoc.id }}
+              onClick={() => setLanguage("all")}
               className={styles.primaryBtn}
             >
               가이드 읽기 시작
@@ -55,6 +54,7 @@ export function HomeView({ docs }: HomeViewProps) {
             <Link
               to="/guide/$docId"
               params={{ docId: "07-kotlin-spring-review" }}
+              onClick={() => setLanguage("kotlin")}
               className={styles.cardLink}
             >
               Kotlin 리뷰 핵심 보기
@@ -65,7 +65,7 @@ export function HomeView({ docs }: HomeViewProps) {
           {/* Go Card */}
           <div className={styles.card}>
             <div className={styles.cardHeader}>
-              <span className={styles.cardLangBadgeGo}>Go / Systems</span>
+              <span className={styles.cardLangBadge}>Go / Systems</span>
             </div>
             <h4>명시적 흐름과 병렬성</h4>
             <p>
@@ -75,6 +75,7 @@ export function HomeView({ docs }: HomeViewProps) {
             <Link
               to="/guide/$docId"
               params={{ docId: "09-go-service-review" }}
+              onClick={() => setLanguage("go")}
               className={styles.cardLink}
             >
               Go 리뷰 핵심 보기
@@ -85,7 +86,7 @@ export function HomeView({ docs }: HomeViewProps) {
           {/* AI Check Card */}
           <div className={styles.card}>
             <div className={styles.cardHeader}>
-              <span className={styles.cardLangBadgeAi}>AI Code Audit</span>
+              <span className={styles.cardLangBadge}>AI Code Audit</span>
             </div>
             <h4>AI 생성 코드 교차 진단</h4>
             <p>
@@ -95,6 +96,7 @@ export function HomeView({ docs }: HomeViewProps) {
             <Link
               to="/guide/$docId"
               params={{ docId: "10-ai-code-review-checklist" }}
+              onClick={() => setLanguage("both")}
               className={styles.cardLink}
             >
               AI 체크리스트 보기
