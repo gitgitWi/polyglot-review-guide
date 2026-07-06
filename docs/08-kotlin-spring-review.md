@@ -2,8 +2,9 @@
 title: "Kotlin Spring Review Guide"
 category: "review"
 language: "kotlin"
-order: 7
+order: 8
 summary: "Kotlin과 Spring Boot 프레임워크 환경에서 코드 리뷰를 진행할 때 컨트롤러, 서비스, 영속 엔티티, 트랜잭션 경계 및 단위 테스트를 진단하는 아키텍처 기준을 수립합니다."
+tags: [code-review, spring, transactions, jpa, dto, architecture]
 ---
 
 # Kotlin Spring Review Guide

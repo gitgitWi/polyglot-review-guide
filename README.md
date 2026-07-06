@@ -63,15 +63,21 @@ The workflow passes `pages deploy dist --project-name=polyglot-review-guide` dir
 - `docs/03-functions-control-flow.md`: functions and control flow
 - `docs/04-async-concurrency.md`: async, threads, goroutines, context
 - `docs/05-validation-errors.md`: validation and error handling
-- `docs/06-kotlin-ecosystem.md`: Kotlin server ecosystem
-- `docs/07-kotlin-spring-review.md`: Kotlin/Spring review guide
-- `docs/08-go-ecosystem.md`: Go server ecosystem
-- `docs/09-go-service-review.md`: Go HTTP service review guide
-- `docs/10-ai-code-review-checklist.md`: AI code review checklist
+- `docs/06-kotlin-idioms.md`: Kotlin syntax with no JS/TS analog (sealed class, object, extension functions, `by` delegation, …)
+- `docs/07-kotlin-ecosystem.md`: Kotlin server ecosystem
+- `docs/08-kotlin-spring-review.md`: Kotlin/Spring review guide
+- `docs/09-go-idioms.md`: Go syntax with no JS/TS analog (pointers, struct embedding, channels, `iota`, type switches, …)
+- `docs/10-go-ecosystem.md`: Go server ecosystem
+- `docs/11-go-service-review.md`: Go HTTP service review guide
+- `docs/12-ai-code-review-checklist.md`: AI code review checklist
+
+## Tags
+
+Each document declares topic `tags` in its front matter. Tags power full-text search (typing a tag name in the sidebar search matches) and a dedicated tag browser at `/tags` (index) and `/tags/:tag` (per-tag document list). Clickable tag chips appear at the top of every document.
 
 ## Adding More Languages
 
-Add a Markdown file under `docs/` with front matter:
+Add a Markdown file under `docs/` with front matter. `tags` is an optional array; every other field is required:
 
 ```md
 ---
@@ -80,10 +86,11 @@ category: "review"
 language: "rust"
 order: 20
 summary: "Rust concepts TypeScript developers should know when reviewing code."
+tags: [ownership, error-handling, code-review]
 ---
 ```
 
-Then run:
+`order` must be a unique integer; the filename numeric prefix should match it. Then run:
 
 ```sh
 bun run build

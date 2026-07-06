@@ -472,6 +472,24 @@ a:focus-visible {
   margin-bottom: 0;
 }
 
+.markdown-body blockquote {
+  margin: 24px 0;
+  border: 1px solid var(--hairline);
+  border-left: 3px solid var(--orange);
+  border-radius: 8px;
+  background: var(--surface-card);
+  padding: 4px 20px;
+  color: var(--charcoal);
+}
+
+.markdown-body blockquote > *:first-child {
+  margin-top: 16px;
+}
+
+.markdown-body blockquote > *:last-child {
+  margin-bottom: 16px;
+}
+
 .numbered {
   border-left: 2px solid var(--hairline-strong);
   padding-left: 14px;

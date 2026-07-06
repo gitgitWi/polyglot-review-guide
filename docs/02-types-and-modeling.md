@@ -4,6 +4,7 @@ category: "types"
 language: "both"
 order: 2
 summary: "TypeScript의 스키마 지향 타입 감각을 Kotlin의 data class, enum 및 Go의 struct, implicit interface로 안전하게 전환합니다."
+tags: [type-system, data-modeling, null-safety, dto, structs, interfaces]
 ---
 
 # Types and Modeling
@@ -61,7 +62,7 @@ data class TokenResponse(
 리뷰 포인트:
 
 - **DTO의 불변성**: 외부에 노출되는 데이터 전송 객체(DTO)가 가변적인 `var`가 아닌, 모두 불변 참조인 `val` 중심으로 선언되었는지 확인합니다.
-- **copy() 메서드를 통한 불변성 훼손**: `copy()` 기능을 무분별하게 호출하여 도메인 객체 내부의 생성 단계에서 검증했던 도메인 규칙(Invariant)을 임의로 위회하여 객체 상태를 우회 갱신하고 있는지 점검합니다.
+- **copy() 메서드를 통한 불변성 훼손**: `copy()` 기능을 무분별하게 호출하여 도메인 객체 내부의 생성 단계에서 검증했던 도메인 규칙(Invariant)을 임의로 우회하여 객체 상태를 갱신하고 있는지 점검합니다.
 - **로깅 시 민감 정보 노출**: `toString()`이 자동 생성되므로, 로그에 사용자 개인정보(PII)나 비밀번호, 엑세스 토큰 등 민감 비밀 정보가 마스킹 없이 그대로 출력될 위험이 없는지 점검합니다.
 
 ---

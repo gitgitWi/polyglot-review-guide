@@ -4,9 +4,12 @@ category: "syntax"
 language: "both"
 order: 1
 summary: "변수 선언, 함수 정의, 클래스와 구조체, 패키지 및 임포트, 접근 제어자(Visibility)를 TypeScript 기준으로 대조합니다."
+tags: [syntax, variables, functions, visibility, packages, null-safety]
 ---
 
 # Syntax Map: TypeScript에서 Kotlin/Go로
+
+이 문서는 TypeScript 문법을 기준점으로 Kotlin과 Go의 대응 문법을 나란히 놓고, 리뷰 시 시선이 가야 할 지점을 정리합니다. 표면적으로는 비슷해 보여도 의미가 다른 지점이 많으니 각 항목의 리뷰 포인트에 주목하세요. TypeScript에 **대응물이 아예 없는** 문법(Kotlin의 sealed class·확장 함수·`by` 위임, Go의 포인터·구조체 임베딩·채널 등)은 `Kotlin Idioms`와 `Go Idioms` 문서에서 따로 다룹니다.
 
 ## 변수 선언 (Variable Declaration)
 

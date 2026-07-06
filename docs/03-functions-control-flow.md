@@ -4,6 +4,7 @@ category: "syntax"
 language: "both"
 order: 3
 summary: "Kotlin과 Go의 조건 분기 표현식, 스코프 함수, 지연 평가 및 Go의 에러 조기 반환(Early Return), 지연 실행(Defer) 방식을 다룹니다."
+tags: [control-flow, pattern-matching, scope-functions, collections, error-handling, defer]
 ---
 
 # Functions and Control Flow
@@ -35,6 +36,8 @@ val status = when (hold.status) {
 - **when 식의 컴파일러 분기 검증**: enum이나 sealed class 계열의 상태를 처리하는 `when` 식이 값으로 할당될 때는 모든 가능한 케이스를 누락 없이 열거(Exhaustive)해야 합니다.
 - **광범위한 else 분기의 위험성**: 모든 분기를 뭉뚱그려 처리하는 광범위한 `else` 분기가 정의되어 있다면, 미래에 신규 enum 값이 추가될 때 컴파일 타임 에러가 발생하지 않아 비즈니스 누락 버그가 발견되지 않은 채 프로덕션으로 나갈 수 있으므로 가급적 개별 분기를 명시하는 것이 안전합니다.
 - **표현식 바디와 부수효과 결합 차단**: 단일 표현식 함수나 `when` 분기 내부에서 복잡한 부수효과(State Mutation 등)를 많이 일으키고 있다면, 코드를 명시적인 블록 바디 형태로 전환하여 실행 순서와 부수효과를 한눈에 식별하기 좋게 개선합니다.
+
+> `sealed class`/`enum`을 `when`으로 처리할 때의 완전성(exhaustiveness) 검증, 인자 없는 `when`, `is` 기반 타입 분기와 스마트 캐스트 등 JS/TS에 없는 Kotlin 고유의 분기 문법은 `Kotlin Idioms` 문서에서 더 깊이 다룹니다.
 
 ---
 

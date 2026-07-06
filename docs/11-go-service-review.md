@@ -2,8 +2,9 @@
 title: "Go Service Review Guide"
 category: "review"
 language: "go"
-order: 9
+order: 11
 summary: "Go HTTP 및 시스템 서비스 영역의 진입점(Main), 라우터와 미들웨어, 핸들러 규칙, 그리고 테스트 seams 설계 기준을 점검합니다."
+tags: [code-review, http, middleware, context, graceful-shutdown, testing]
 ---
 
 # Go Service Review Guide
@@ -16,7 +17,7 @@ Go 서버 서비스의 `main.go` 파일은 시스템의 전체 기동 실패 케
 
 - **기동 시 무조건 실패 처리(Fail-fast) 검증**: 인프라 연결 정보 누락이나 잘못 설정된 설정값 등이 들어왔을 때, 구동 이후 런타임 중에 불시 에러를 내며 죽지 않고 기동 즉시 `log.Fatal`을 타며 프로세스를 즉각 정상 중단시키는지 검토합니다.
 - **안전한 기본 인증 정보 처리**: DB 비밀번호나 인증용 토큰 등의 보안 세부 정보가 환경 변수 설정 등 외부 공급자로부터 안전하게 로드되는지 확인하고 코드 내에 하드코딩된 누수가 없는지 검증합니다.
-- **Graceful Shutdown 시그널 요격**: 시스템 중단 시그널(`SIGTERM`, `SIGINT`) 수신 즉시 대기 대포(HTTP Server)의 신규 접속을 닫고, 현재 처리 중인 잔여 워크들 및 데이터베이스 채널 자원을 안전하게 반환받아 프로세스를 최종 클린 퇴출시키는지 구현 흐름을 봅니다.
+- **Graceful Shutdown 시그널 요격**: 시스템 중단 시그널(`SIGTERM`, `SIGINT`) 수신 즉시 수신 대기 중인 HTTP 서버의 신규 접속을 닫고, 현재 처리 중인 잔여 요청들 및 데이터베이스 커넥션 자원을 안전하게 반환받아 프로세스를 최종적으로 깨끗하게 종료하는지 구현 흐름을 봅니다.
 
 ---
 

@@ -2,8 +2,9 @@
 title: "AI Code Review Checklist"
 category: "review"
 language: "both"
-order: 10
+order: 12
 summary: "생성형 AI가 작성한 Kotlin 및 Go 코드를 사람이 심층 리뷰할 때 빠뜨리기 쉬운 인프라, 비즈니스 및 운영 관점의 누수 항목들을 통합 점검합니다."
+tags: [code-review, ai-review, checklist, security, transactions, concurrency]
 ---
 
 # AI Code Review Checklist
@@ -11,6 +12,9 @@ summary: "생성형 AI가 작성한 Kotlin 및 Go 코드를 사람이 심층 리
 생성형 AI 모델이 조립한 코드는 문법적으로는 컴파일이 성공하여 그럴싸해 보일지 몰라도, 세부적인 경계 조건(Edge Cases)의 방어, 운영 서버 환경의 물리적 제약 요건, 그리고 기존 도메인의 아키텍처 일관성 규약을 빈번하게 놓치곤 합니다.
 
 사람 개발자의 코드 리뷰 시선은 단순한 "작동 가능 여부"를 넘어, "해당 시스템의 신뢰성 철학과 운영 가이드를 충실히 이행했는가"에 맞추어 검증을 고도화해야 합니다.
+
+> [!TIP]
+> AI가 생성한 코드는 `!!`(널 강제 단언), typed nil, 채널 누수처럼 JS/TS에 대응물이 없는 문법 주변에서 미묘한 결함을 남기기 쉽습니다. 낯선 문법 자체가 헷갈린다면 `Kotlin Idioms`·`Go Idioms` 문서를 먼저 참고한 뒤 아래 체크리스트로 돌아오세요.
 
 ---
 

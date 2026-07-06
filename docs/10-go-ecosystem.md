@@ -2,8 +2,9 @@
 title: "Go Ecosystem"
 category: "ecosystem"
 language: "go"
-order: 8
+order: 10
 summary: "Go 서버 개발 진영의 표준 라이브러리 활용 관례, 웹 요청 라우팅, 유효성 검증, 구조체 태그, 명시적 의존성 바인딩 및 배포 생태계를 다룹니다."
+tags: [ecosystem, http, standard-library, dependency-injection, deployment, middleware]
 ---
 
 # Go Ecosystem

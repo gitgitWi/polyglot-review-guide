@@ -4,6 +4,7 @@ category: "runtime"
 language: "both"
 order: 4
 summary: "Node.js 이벤트 루프 비동기 환경과 Kotlin/Spring의 멀티 스레드 기반 트랜잭션 환경, 그리고 Go의 경량 고루틴 및 컨텍스트 취소 모델의 차이점을 파악합니다."
+tags: [concurrency, coroutines, goroutines, context, transactions, runtime-model]
 ---
 
 # Async and Concurrency
@@ -43,7 +44,16 @@ Kotlin 코루틴은 OS 스레드 수준의 컨텍스트 스위칭 비용 없이,
 
 ```kotlin
 suspend fun fetchUser(id: String): User
+
+// TypeScript의 Promise.all에 해당하는 병렬 실행: coroutineScope + async + await
+suspend fun loadDashboard(userId: String): Dashboard = coroutineScope {
+    val profile = async { fetchProfile(userId) } // 동시 시작 (Deferred 반환)
+    val orders = async { fetchOrders(userId) }
+    Dashboard(profile.await(), orders.await())    // 두 결과를 모두 대기
+}
 ```
+
+`async`는 결과를 담는 `Deferred`를 즉시 반환하고 `await()`에서 값을 회수합니다. `coroutineScope`는 자식 코루틴이 모두 끝날 때까지 반환을 미루며, 하나라도 실패하면 나머지 형제 코루틴을 취소하는 구조화된 동시성(Structured Concurrency)의 경계입니다. 여러 결과를 한꺼번에 모을 때는 `listOf(...).awaitAll()`을 씁니다. `suspend`·`async` 등 코루틴 문법 자체가 낯설다면 `Kotlin Idioms` 문서를 함께 참고하세요.
 
 리뷰 포인트:
 
@@ -62,6 +72,20 @@ go func() {
 		serverErr <- err
 	}
 }()
+```
+
+여러 작업을 병렬로 처리하고 모두 기다리는 것(`Promise.all`에 해당)은 `sync.WaitGroup` 또는 `golang.org/x/sync/errgroup`으로 표현합니다. `errgroup`은 첫 에러를 수집하고 컨텍스트를 취소해 준다는 점에서 더 안전합니다.
+
+```go
+g, ctx := errgroup.WithContext(ctx)
+for _, id := range ids {
+	g.Go(func() error {
+		return process(ctx, id) // 하나라도 에러면 ctx가 취소되어 나머지도 중단
+	})
+}
+if err := g.Wait(); err != nil { // 모든 고루틴 완료 대기 + 첫 에러 반환
+	return err
+}
 ```
 
 리뷰 포인트:

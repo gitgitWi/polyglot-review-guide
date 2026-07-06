@@ -4,6 +4,7 @@ category: "api"
 language: "both"
 order: 5
 summary: "TypeScript의 스키마 검증 및 예외 제어 감각을 Kotlin/Spring의 선언적 유효성 검증과 Go의 명시적 에러 파이프라인으로 이식합니다."
+tags: [validation, error-handling, dto, exceptions, http]
 ---
 
 # Validation and Errors

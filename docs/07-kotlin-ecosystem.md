@@ -2,8 +2,9 @@
 title: "Kotlin Ecosystem"
 category: "ecosystem"
 language: "kotlin"
-order: 6
+order: 7
 summary: "Kotlin 서버 애플리케이션 개발의 핵심을 이루는 JVM 인프라, Spring Boot 아키텍처, Ktor 경량 엔진, ORM 생태계 및 테스트 도구들을 진단합니다."
+tags: [ecosystem, spring, jvm, persistence, jpa, build-tools, testing]
 ---
 
 # Kotlin Ecosystem
