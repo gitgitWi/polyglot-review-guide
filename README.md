@@ -48,6 +48,13 @@ For a Git-connected Cloudflare Pages project, use:
 
 The `public/_redirects` file is copied into `dist/_redirects` so direct links to TanStack Router routes work as SPA routes.
 
+For release-based direct upload deployments, `.github/workflows/release-production.yml` uses Cloudflare Wrangler Action with:
+
+- `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_API_TOKEN`
+
+The workflow passes `pages deploy dist --project-name=polyglot-review-guide` directly, so a `wrangler.toml` file is not required. Add one only if you want Wrangler defaults such as `pages_build_output_dir` to be shared between local CLI usage and CI.
+
 ## Content Structure
 
 - `docs/00-overview.md`: learning map
