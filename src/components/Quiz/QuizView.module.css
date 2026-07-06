@@ -1,0 +1,233 @@
+.quizContainer {
+  max-width: 860px;
+  padding: 56px 44px 128px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.quizHero {
+  margin-bottom: 40px;
+}
+
+.quizBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--blue-glow);
+  color: var(--blue);
+  border: 1px solid rgba(0, 117, 255, 0.2);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 16px;
+}
+
+.quizHero h2 {
+  font-family: var(--font-display);
+  font-size: 42px;
+  font-weight: 400;
+  margin: 0 0 16px;
+  color: var(--ink);
+}
+
+.quizHero p {
+  color: var(--charcoal);
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.quizCardStack {
+  position: relative;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 16px;
+  background: var(--surface-card);
+  padding: 32px;
+}
+
+.quizPreviewCard {
+  filter: blur(2px);
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.quizCardHeader {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 20px;
+}
+
+.quizQNum {
+  color: var(--ash);
+}
+
+.quizDifficulty {
+  color: var(--orange);
+}
+
+.quizQTitle {
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.4;
+  margin: 0 0 24px;
+}
+
+.quizCodeSnip {
+  background: var(--surface-deep);
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+  overflow: auto;
+}
+
+.quizCodeSnip pre {
+  margin: 0;
+}
+
+.quizCodeSnip code {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--body);
+  font-size: 12px;
+}
+
+.quizOptions {
+  display: grid;
+  gap: 12px;
+}
+
+.quizOptBtn {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  text-align: left;
+  background: var(--surface-elevated);
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  color: var(--body);
+  padding: 14px 18px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.optMarker {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  background: var(--surface-card);
+  border: 1px solid var(--hairline-strong);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ash);
+}
+
+.isCorrectHint {
+  border-color: rgba(34, 255, 153, 0.3) !important;
+  background: rgba(34, 255, 153, 0.04) !important;
+}
+
+.isCorrectHint .optMarker {
+  background: var(--green) !important;
+  color: #000 !important;
+  border-color: var(--green) !important;
+}
+
+.quizComingSoonOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+}
+
+.comingSoonContent {
+  text-align: center;
+  max-width: 440px;
+}
+
+.comingSoonIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--hairline-strong);
+  color: var(--orange);
+  margin-bottom: 24px;
+  box-shadow: 0 0 32px var(--orange-glow);
+}
+
+.comingSoonContent h3 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--ink);
+  margin: 0 0 12px;
+}
+
+.comingSoonContent p {
+  color: var(--charcoal);
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0 0 24px;
+}
+
+.comingSoonBtn {
+  display: inline-flex;
+  align-items: center;
+  height: 38px;
+  background: var(--ink);
+  color: #000;
+  border: 0;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 0 18px;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.comingSoonBtn:hover {
+  background: var(--light);
+}
+
+@media (max-width: 960px) {
+  .quizContainer {
+    padding: 40px 24px 96px;
+  }
+}
+
+@media (max-width: 640px) {
+  .quizHero h2 {
+    font-size: 32px;
+  }
+
+  .quizCardStack {
+    padding: 20px;
+  }
+
+  .comingSoonContent h3 {
+    font-size: 24px;
+  }
+}

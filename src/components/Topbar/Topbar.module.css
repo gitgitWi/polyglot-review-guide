@@ -1,0 +1,141 @@
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  border-bottom: 1px solid var(--hairline);
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(16px);
+  padding: 0 32px;
+}
+
+.topbarLeft {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.hamburgerBtn {
+  display: none;
+  background: transparent;
+  border: 0;
+  color: var(--ink);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.breadcrumbCategory {
+  color: var(--ash);
+}
+
+.breadcrumbDivider {
+  color: var(--stone);
+}
+
+.breadcrumbLang {
+  color: var(--orange);
+}
+
+.topbarRight {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.tabSwitcher {
+  display: flex;
+  background: var(--surface-card);
+  border: 1px solid var(--hairline-strong);
+  border-radius: 999px;
+  padding: 3px;
+}
+
+.tabBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--charcoal);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 0 14px;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.tabBtn:hover {
+  color: var(--ink);
+}
+
+.isActive {
+  background: var(--surface-elevated) !important;
+  color: var(--ink) !important;
+  box-shadow: 0 0 1px rgba(255,255,255,0.1);
+}
+
+.tabBadge {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: var(--orange-glow);
+  color: var(--orange);
+  border: 1px solid rgba(255, 128, 31, 0.2);
+  border-radius: 4px;
+  padding: 1px 4px;
+  margin-left: 2px;
+}
+
+.metaPills {
+  display: flex;
+  align-items: center;
+}
+
+.metaPills span {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  height: 28px;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: var(--surface-card);
+  color: var(--charcoal);
+  padding: 0 12px;
+  font-size: 12px;
+}
+
+@media (max-width: 960px) {
+  .hamburgerBtn {
+    display: block;
+  }
+  
+  .topbar {
+    padding: 0 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  .topbarRight {
+    gap: 12px;
+  }
+
+  .metaPills {
+    display: none;
+  }
+}
