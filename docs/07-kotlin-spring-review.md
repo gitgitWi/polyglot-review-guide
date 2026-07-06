@@ -75,6 +75,7 @@ class Identity(
 
 > [!WARNING]
 > Kotlin 및 Spring MVC 코드 리뷰 중 발견 즉시 반드시 조치를 제안해야 하는 대표적인 결함들입니다.
+>
 > - **널 강제 단언 연산자 `!!` 사용**: 런타임 NullPointerException 크래시를 유발하는 위험 신호입니다.
 > - **광범위한 에러 삼킴(Catching Exception)**: 오류의 원인 추적을 막고 영속성 롤백 정상 작동을 마비시키는 `catch (e: Exception)` 남용을 경계합니다.
 > - **트랜잭션 스코프 내부의 외부 지연 I/O 연동**: 데이터베이스 커넥션 고갈을 촉발시키는 주요 성능 병목 요인입니다.

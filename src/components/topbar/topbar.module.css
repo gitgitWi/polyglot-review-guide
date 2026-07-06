@@ -87,7 +87,7 @@
 .isActive {
   background: var(--surface-elevated) !important;
   color: var(--ink) !important;
-  box-shadow: 0 0 1px rgba(255,255,255,0.1);
+  box-shadow: 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
 .tabBadge {
@@ -124,7 +124,7 @@
   .hamburgerBtn {
     display: block;
   }
-  
+
   .topbar {
     padding: 0 24px;
   }

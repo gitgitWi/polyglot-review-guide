@@ -1,4 +1,3 @@
-import React from "react";
 import Markdown from "marked-react";
 import { CodeBlock } from "../code-block";
 import type { GuideDoc } from "../../generated/guide-data";

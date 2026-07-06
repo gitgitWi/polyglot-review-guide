@@ -70,8 +70,7 @@
   border: 1px solid var(--hairline);
   border-radius: 12px;
   background:
-    linear-gradient(135deg, rgba(255, 128, 31, 0.08), transparent 52%),
-    var(--surface-card);
+    linear-gradient(135deg, rgba(255, 128, 31, 0.08), transparent 52%), var(--surface-card);
   padding: 20px;
 }
 

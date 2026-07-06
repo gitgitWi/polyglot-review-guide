@@ -1,4 +1,3 @@
-import React from "react";
 import { BookOpen, Menu, Sparkles } from "lucide-react";
 import type { GuideDoc } from "../../generated/guide-data";
 import styles from "./topbar.module.css";

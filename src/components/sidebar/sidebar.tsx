@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "@tanstack/react-router";
 import { Languages, Search, X } from "lucide-react";
 import type { GuideDoc } from "../../generated/guide-data";
@@ -19,7 +18,10 @@ export function Sidebar({ isOpen, onClose, visibleDocs, currentDoc }: SidebarPro
   const setLanguage = useGuideStore((state) => state.setLanguage);
 
   return (
-    <aside className={`${styles.sidebar} ${isOpen ? styles.isOpen : ""}`} aria-label="Guide navigation">
+    <aside
+      className={`${styles.sidebar} ${isOpen ? styles.isOpen : ""}`}
+      aria-label="Guide navigation"
+    >
       <div className={styles.sidebarHeader}>
         <div className={styles.brand}>
           <div className={styles.brandMark} aria-hidden="true">
@@ -42,9 +44,7 @@ export function Sidebar({ isOpen, onClose, visibleDocs, currentDoc }: SidebarPro
 
       <div className={styles.heroPanel}>
         <p className={styles.eyebrow}>Kotlin · Go · field guide</p>
-        <p>
-          TypeScript 개발자 관점에서 대형 언어 생태계 코드를 읽고 분석하기 위한 전문 기술 백서.
-        </p>
+        <p>TypeScript 개발자 관점에서 대형 언어 생태계 코드를 읽고 분석하기 위한 전문 기술 백서.</p>
       </div>
 
       <label className={styles.searchBox}>

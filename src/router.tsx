@@ -66,7 +66,7 @@ function GuideShell({ selectedDoc }: { selectedDoc: GuideDoc }) {
 
   const currentDoc = visibleDocs.some((doc) => doc.id === selectedDoc.id)
     ? selectedDoc
-    : visibleDocs[0] ?? selectedDoc;
+    : (visibleDocs[0] ?? selectedDoc);
 
   // Close sidebar and reset tab to guide when route/doc changes
   useEffect(() => {

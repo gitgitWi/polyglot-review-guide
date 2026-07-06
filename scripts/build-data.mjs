@@ -43,9 +43,7 @@ function parseFrontMatter(raw, file) {
   return { meta, body };
 }
 
-const files = (await readdir(docsDir))
-  .filter((file) => file.endsWith(".md"))
-  .sort();
+const files = (await readdir(docsDir)).filter((file) => file.endsWith(".md")).sort();
 
 const docs = [];
 for (const file of files) {

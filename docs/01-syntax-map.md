@@ -119,7 +119,7 @@ func New(sender Sender, logger *slog.Logger) *Handler {
 
 리뷰 포인트:
 
-- **Kotlin/Spring 생성자 주입**: Kotlin/Spring 환경에서는 별도의 `@Autowired` 없이 주 생성자 선언부에 의존성을 선언하는 생성자 주입(Constructor Injection) 형식을 사용합니다. 
+- **Kotlin/Spring 생성자 주입**: Kotlin/Spring 환경에서는 별도의 `@Autowired` 없이 주 생성자 선언부에 의존성을 선언하는 생성자 주입(Constructor Injection) 형식을 사용합니다.
 - **Go의 명시적 의존성 바인딩**: Go 생태계는 마법 같은 DI 프레임워크보다 명시적인 생성자 함수(`New`)와 구조체 결합(Composition)을 활용합니다. 의존 관계가 흐름상 투명하게 드러나고 테스트 시 대역 주입이 용이하도록 설계되었는지 점검합니다.
 - **Go 포인터 리시버**: Go에서 정의되는 메서드 리시버 `func (h *Handler) Notify(...)`는 TypeScript의 클래스 메서드와 유사하게 이해할 수 있습니다. 상태 값의 변경 여부나 복사 비용에 따라 포인터 리시버(`*Handler`)와 값 리시버(`Handler`)가 구분되어 적절하게 사용되었는지 검토합니다.
 
