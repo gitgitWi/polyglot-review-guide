@@ -1,5 +1,7 @@
 node_modules/
 dist/
+# Generated per-document body chunks (rebuilt by scripts/build-data.mjs)
+src/generated/bodies/
 .DS_Store
 .env
 .env.local

@@ -8,7 +8,7 @@
     "dev": "bun scripts/build-data.mjs && bun --bun vite --host 127.0.0.1",
     "preview": "bun --bun vite preview --host 127.0.0.1",
     "validate": "bun scripts/validate.mjs",
-    "typecheck": "bun --bun tsc --noEmit",
+    "typecheck": "bun scripts/build-data.mjs && bun --bun tsc --noEmit",
     "lint": "oxlint .",
     "lint:fix": "oxlint --fix .",
     "format": "oxfmt --write ."

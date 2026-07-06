@@ -1,10 +1,12 @@
+import { useEffect, useState } from "react";
 import Markdown from "marked-react";
 import { CodeBlock } from "../code-block";
-import type { GuideDoc } from "../../generated/guide-data";
+import { TagPills } from "../tags/tag-pills";
+import { loadDocBody, type GuideDoc } from "../../generated/guide-data";
 
 interface DocContentProps {
   currentDoc: GuideDoc;
-  isRendering: boolean;
+  isRendering?: boolean;
 }
 
 interface TocItem {
@@ -61,21 +63,58 @@ const createRenderer = () => ({
       return <h3 id={id}>{text}</h3>;
     }
     if (level === 1) {
-      return null; // hide H1 header since it is rendered in Topbar
+      return <></>; // hide H1 header since it is rendered in Topbar
     }
     const Tag = `h${level}` as any;
     return <Tag>{text}</Tag>;
   },
 });
 
-export function DocContent({ currentDoc, isRendering }: DocContentProps) {
+/** Skeleton shown while a document body chunk is being fetched. */
+function BodySkeleton() {
+  return (
+    <div className="markdown-body flex flex-col gap-4" aria-hidden="true">
+      <div className="h-4 w-full animate-pulse rounded bg-[var(--surface-card)]" />
+      <div className="h-4 w-[92%] animate-pulse rounded bg-[var(--surface-card)]" />
+      <div className="h-4 w-[78%] animate-pulse rounded bg-[var(--surface-card)]" />
+      <div className="mt-6 h-6 w-1/3 animate-pulse rounded bg-[var(--surface-elevated)]" />
+      <div className="h-4 w-full animate-pulse rounded bg-[var(--surface-card)]" />
+      <div className="h-4 w-[85%] animate-pulse rounded bg-[var(--surface-card)]" />
+    </div>
+  );
+}
+
+export function DocContent({ currentDoc, isRendering = false }: DocContentProps) {
+  const [body, setBody] = useState<string | null>(null);
+
+  // Bodies are code-split; fetch the chunk for the active document on demand.
+  useEffect(() => {
+    let alive = true;
+    setBody(null);
+    loadDocBody(currentDoc.id).then((loaded) => {
+      if (alive) {
+        setBody(loaded);
+      }
+    });
+    return () => {
+      alive = false;
+    };
+  }, [currentDoc.id]);
+
+  const isLoading = body === null;
   // Remove the first H1 header line from markdown body to avoid duplication with Topbar title
-  const cleanBody = currentDoc.body.replace(/^#\s+.+$/m, "");
-  const toc = extractToc(cleanBody);
+  const cleanBody = isLoading ? "" : body.replace(/^#\s+.+$/m, "");
+  const toc = isLoading ? [] : extractToc(cleanBody);
   const renderer = createRenderer();
 
   return (
-    <article aria-busy={isRendering} className="doc-content">
+    <article aria-busy={isRendering || isLoading} className="doc-content">
+      {currentDoc.tags.length > 0 && (
+        <div className="mb-5">
+          <TagPills tags={currentDoc.tags} />
+        </div>
+      )}
+
       {toc.length > 0 && (
         <div className="border border-[var(--hairline)] bg-[var(--surface-card)] rounded-xl p-5 mb-3">
           <h4 className="text-[11px] font-bold uppercase tracking-wider text-[var(--stone)] m-0 mb-3.5">
@@ -101,9 +140,13 @@ export function DocContent({ currentDoc, isRendering }: DocContentProps) {
         </div>
       )}
 
-      <div className="markdown-body">
-        <Markdown value={cleanBody} renderer={renderer} />
-      </div>
+      {isLoading ? (
+        <BodySkeleton />
+      ) : (
+        <div className="markdown-body">
+          <Markdown value={cleanBody} renderer={renderer} />
+        </div>
+      )}
     </article>
   );
 }
