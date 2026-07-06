@@ -81,19 +81,23 @@ function GuideShell({ selectedDoc, isHome = false }: { selectedDoc?: GuideDoc; i
       ? selectedDoc
       : (visibleDocs[0] ?? selectedDoc ?? homeMetaDoc);
 
-  const handleScroll = (e: React.UIEvent<HTMLElement>) => {
-    setIsShrunk(e.currentTarget.scrollTop > 24);
-  };
+  // Track window scroll to shrink topbar
+  useEffect(() => {
+    const handleWindowScroll = () => {
+      setIsShrunk(window.scrollY > 24);
+    };
+    window.addEventListener("scroll", handleWindowScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleWindowScroll);
+    };
+  }, []);
 
   // Reset scroll to top and state when route/doc changes
   useEffect(() => {
     setIsSidebarOpen(false);
     setActiveTab("guide");
     setIsShrunk(false);
-    const contentShell = document.querySelector(".content-shell");
-    if (contentShell) {
-      contentShell.scrollTop = 0;
-    }
+    window.scrollTo(0, 0);
   }, [selectedDoc, isHome]);
 
   return (
@@ -116,7 +120,7 @@ function GuideShell({ selectedDoc, isHome = false }: { selectedDoc?: GuideDoc; i
       />
 
       {/* Main Content Workspace */}
-      <main className="content-shell" onScroll={handleScroll}>
+      <main className="content-shell">
         <Topbar
           currentDoc={currentDoc}
           activeTab={activeTab}

@@ -443,8 +443,23 @@ a:focus-visible {
 }
 
 .doc-content ul {
+  list-style-type: disc;
   margin: 12px 0 24px;
   padding-left: 20px;
+}
+
+.doc-content ol {
+  list-style-type: decimal;
+  margin: 12px 0 24px;
+  padding-left: 20px;
+}
+
+.doc-content li {
+  margin-bottom: 8px;
+}
+
+.doc-content li:last-child {
+  margin-bottom: 0;
 }
 
 .numbered {
