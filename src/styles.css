@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+html {
+  scroll-behavior: smooth;
+}
 @font-face {
   font-family: "BookkMyungjo";
   src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/BookkMyungjo-Lt.woff2")
@@ -428,6 +431,7 @@ a:focus-visible {
   font-weight: 500;
   line-height: 1.3;
   letter-spacing: -0.01em;
+  scroll-margin-top: 96px;
 }
 
 .doc-content h3 {
@@ -435,6 +439,7 @@ a:focus-visible {
   color: var(--ink);
   font-size: 18px;
   font-weight: 500;
+  scroll-margin-top: 96px;
 }
 
 .doc-content p,
