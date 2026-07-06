@@ -53,11 +53,10 @@ static-assets Worker. Configuration lives in `wrangler.jsonc`:
 > as an infinite loop (serving `/index.html` normalizes back to `/` and re-matches
 > the `/*` rule), so no `_redirects` file is shipped.
 
-`.github/workflows/release-production.yml` also has a manual/release-triggered
-job that currently runs `wrangler pages deploy` (classic Cloudflare Pages). That
-is a separate target from the Workers static-assets deployment above; if you rely
-on it, align it to `wrangler deploy` so it uses this same `wrangler.jsonc`
-configuration. It reads `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN`.
+`.github/workflows/release-production.yml` runs the same `wrangler deploy`
+(Workers static assets) on manual dispatch or a published release, using this
+`wrangler.jsonc` — so the CI release and the Git-connected auto-deploy hit the
+same target. It reads `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN`.
 
 ## Content Structure
 

@@ -2,7 +2,6 @@ name: Production Release
 
 env:
   BUILD_OUTPUT_DIR: "dist"
-  CLOUDFLARE_PROJECT_NAME: "polyglot-review-guide"
 
 on:
   workflow_dispatch:
@@ -65,13 +64,13 @@ jobs:
           name: ${{ env.TAG_NAME }}
           path: ${{ env.TAG_NAME }}.zip
 
-      - name: Deploy to Cloudflare Pages
+      - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy ${{ env.BUILD_OUTPUT_DIR }} --project-name=${{ env.CLOUDFLARE_PROJECT_NAME }} --branch=main
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          # Workers static-assets deploy; name + assets (dist) + SPA fallback come from wrangler.jsonc.
+          command: deploy
 
       - name: Create Release Note
         if: github.event_name == 'workflow_dispatch'
