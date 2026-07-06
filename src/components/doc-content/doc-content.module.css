@@ -1,0 +1,50 @@
+.tocBox {
+  border: 1px solid var(--hairline);
+  background: var(--surface-card);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 40px;
+}
+
+.tocTitle {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--stone);
+  margin: 0 0 14px 0;
+}
+
+.tocList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tocItem {
+  line-height: 1.45;
+}
+
+.level2 {
+  padding-left: 0;
+}
+
+.level3 {
+  padding-left: 16px;
+  border-left: 1px solid var(--hairline-strong);
+  margin-left: 2px;
+}
+
+.tocLink {
+  font-size: 13.5px;
+  color: var(--charcoal);
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+
+.tocLink:hover {
+  color: var(--orange);
+}
