@@ -20,8 +20,8 @@ Alan is used as an example product brand, but the content is intentionally writt
 ## Local Development
 
 ```sh
-npm install
-npm run dev
+bun install
+bun run dev
 ```
 
 The dev server starts on a Vite URL, usually `http://127.0.0.1:5173`.
@@ -29,7 +29,7 @@ The dev server starts on a Vite URL, usually `http://127.0.0.1:5173`.
 ## Build
 
 ```sh
-npm run build
+bun run build
 ```
 
 The build script:
@@ -43,7 +43,7 @@ The build script:
 
 For a Git-connected Cloudflare Pages project, use:
 
-- Build command: `npm run build`
+- Build command: `bun run build`
 - Build output directory: `dist`
 
 The `public/_redirects` file is copied into `dist/_redirects` so direct links to TanStack Router routes work as SPA routes.
@@ -79,5 +79,5 @@ summary: "Rust concepts TypeScript developers should know when reviewing code."
 Then run:
 
 ```sh
-npm run build
+bun run build
 ```
