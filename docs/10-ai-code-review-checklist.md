@@ -3,53 +3,49 @@ title: "AI Code Review Checklist"
 category: "review"
 language: "both"
 order: 10
-summary: "AI가 작성한 Kotlin/Go 코드를 리뷰할 때 빠뜨리기 쉬운 항목을 언어별로 점검한다."
+summary: "생성형 AI가 작성한 Kotlin 및 Go 코드를 사람이 심층 리뷰할 때 빠뜨리기 쉬운 인프라, 비즈니스 및 운영 관점의 누수 항목들을 통합 점검합니다."
 ---
 
 # AI Code Review Checklist
 
-AI가 작성한 코드는 문법적으로 그럴듯하지만 경계 조건, 운영 제약, 기존 아키텍처 관성을 놓치기 쉽다. 리뷰는 "컴파일되는가"보다 "이 시스템의 규칙을 지키는가"에 맞춘다.
+생성형 AI 모델이 조립한 코드는 문법적으로는 컴파일이 성공하여 그럴싸해 보일지 몰라도, 세부적인 경계 조건(Edge Cases)의 방어, 운영 서버 환경의 물리적 제약 요건, 그리고 기존 도메인의 아키텍처 일관성 규약을 빈번하게 놓치곤 합니다. 
 
-## 공통 체크
+사람 개발자의 코드 리뷰 시선은 단순한 "작동 가능 여부"를 넘어, "해당 시스템의 신뢰성 철학과 운영 가이드를 충실히 이행했는가"에 맞추어 검증을 고도화해야 합니다.
 
-- 기존 프로젝트의 dependency와 패턴을 따르는가?
-- 새 라이브러리를 추가했다면 여러 명확한 이점이 있는가?
-- request validation, domain validation, DB constraint 책임이 분리되어 있는가?
-- happy path뿐 아니라 validation failure, auth failure, duplicate request, timeout, partial failure를 다루는가?
-- log에 credential, token, PII가 들어가지 않는가?
-- 테스트가 실제 버그를 잡을 수 있는 assertion을 갖는가?
-- generated code, migration, OpenAPI, docs와 drift가 없는가?
+---
 
-## Kotlin/Spring 체크
+## 공통 통합 점검 항목 (Cross-language Verification)
 
-- `@Transactional` 경계가 맞는가?
-- write method에 transaction이 빠지지 않았는가?
-- read-only transaction에서 entity mutation이 일어나지 않는가?
-- transaction 내부에 외부 HTTP/SDK/email/push 호출이 없는가?
-- `!!`, broad catch, `runCatching` 남용이 없는가?
-- nullable field가 DB schema와 business rule을 정확히 반영하는가?
-- `@Valid`와 DTO annotation이 실제 controller path에서 실행되는가?
-- exception이 global handler에서 올바른 HTTP status/error code로 변환되는가?
-- JPA entity를 API response로 직접 노출하지 않는가?
+- **생태계 아키텍처 및 의존성 규칙 일관성**: 기존 코드베이스에 확립된 계층 구조 및 의존성 방향(Layer Dependency)을 따르고 있는지 확인하고, 무심코 무거운 서드파티 라이브러리를 추가하여 패키지 크기를 부풀리고 있지 않은지 봅니다.
+- **다층 검증 레이어 구획**: 클라이언트 인바운드 규약을 방어하는 페이로드 형식 검증(DTO Schema)과 핵심 데이터 정합성을 지키는 비즈니스 검증(Domain Invariant)이 각자의 적합한 위치에 격리 설계되었는지 확인합니다.
+- **예외 복원력 설계**: 단순 정상 시나리오(Happy Path) 외에, 입력 값 검증 실패, 인가 실패, 트랜잭션 충돌, 업스트림 타임아웃, 분산 환경의 네트워크 파편화(Partial Failure) 시나리오가 촘촘히 처리되어 있는지 검증합니다.
+- **보안 정보 누출 방어**: 로그 메시지나 에러 디테일에 비밀번호, 인증 토큰, 또는 사용자 개인 식별 정보(PII)가 여과 없이 그대로 출력되는 경로가 없는지 차단합니다.
+- **테스트 어설션 무결성 검증**: 단순히 호출 테스트 수준의 무늬만 있는 코드가 아니라, 실질적인 비즈니스 롤백이나 상태 전이 검증이 포함된 알찬 테스트인지 확인합니다.
 
-## Go 체크
+---
 
-- 모든 `err`가 처리되는가?
-- error wrapping에 `%w`를 사용해 cause를 보존하는가?
-- HTTP handler가 error response 후 return하는가?
-- `r.Context()`가 downstream I/O까지 전달되는가?
-- request body size, server timeout, shutdown timeout이 있는가?
-- goroutine lifecycle이 context나 channel로 닫히는가?
-- channel이 unbuffered/blocking일 때 deadlock 가능성이 없는가?
-- exported symbol이 불필요하게 많지 않은가?
-- struct tag와 validation schema가 실제 JSON field와 맞는가?
-- fake/test seam을 위한 interface가 작고 consumer 쪽에 있는가?
+## Kotlin / Spring Boot 특화 점검 항목
 
-## 리뷰 질문 템플릿
+- **데이터베이스 트랜잭션 경계 안전성**: 데이터의 추가/수정/삭제 행위가 발생하는 쓰기 유스케이스 메서드 위에 트랜잭션 선언(`@Transactional`)이 누락되어 예외 발생 시 데이터가 롤백되지 않는 오동작이 없는지 확인합니다.
+- **트랜잭션 내부의 무거운 I/O 격리**: 트랜잭션 처리 블록 안에 외부 네트워크 API 요청이나 슬랙 발송, 푸시 메시지 발송 등 임의의 지연 요소가 결합되어 커넥션 고갈을 부추기고 있지 않은지 검사합니다.
+- **널 단언 및 예외 삼킴 규제**: 코드 곳곳에 `!!` 연산자나 원인 모를 `try-catch` 후 로깅 없는 침묵(예외 삼킴) 코드가 숨어 있는지 추적하여 정리합니다.
+- **DTO와 영속 엔티티 격리**: JPA 엔티티 인스턴스 정보가 클라이언트 API 결과값으로 직접 리턴되어 지연 로딩 예외나 스키마 강제 노출을 초래하고 있지 않은지 차단합니다.
+- **글로벌 에러 처리기 매핑**: 서비스 도메인 예외가 공통 예외 핸들러(`@ControllerAdvice`)를 타고 정돈된 4xx/5xx 규격의 표준 응답 포맷으로 가공되는지 검토합니다.
 
-- 이 코드의 실패 경로는 어디로 흐르는가?
-- 같은 요청이 두 번 들어오면 어떻게 되는가?
-- timeout/cancel이 걸리면 어떤 resource가 정리되는가?
-- transaction 또는 goroutine이 예상보다 오래 살아남을 수 있는가?
-- 타입은 domain 의미를 충분히 보존하는가?
-- 테스트가 이 변경의 가장 위험한 가정을 검증하는가?
+---
+
+## Go 특화 점검 항목
+
+- **명시적 에러 처리 누락 차단**: 모든 함수 호출에서 에러 리턴 변수 `err`에 대한 누락 없는 `if err != nil` 분기 가드가 장착되어 있고, 언더스코어 문자로 삼킨 것은 없는지 감시합니다.
+- **컨텍스트 라이프사이클 취소 전파**: HTTP 인바운드 호출에서 추출한 요청 수명 주기 컨텍스트인 `r.Context()`를 하위 영속 쿼리 및 외부 API 호출기 파라미터로 끝까지 인계하고 있는지 확인합니다.
+- **고루틴 누출 및 데드락 방어**: 백그라운드로 쏘아 올린 고루틴(`go DoSomething()`)이 감시 채널이나 컨텍스트 캔슬레이션 신호 없이 영구히 멈춰 백그라운드 리소스를 낭비하지 않는지 가드를 검증합니다.
+- **HTTP 핸들러 조기 복귀 누락 방어**: 오류 응답을 전송하는 조건식 바디 내부에서 `return` 처리가 누락되어 하위 정상 비즈니스 로직으로 흐름이 새어 나가는 버그가 없는지 확인합니다.
+
+---
+
+## 리뷰 질문 템플릿 (Review Questions)
+
+- 이 변경 사항에서 예기치 못한 네트워크 타임아웃이나 업스트림 지연이 발생할 때, 어떤 시스템 자원(커넥션, 스레드)이 낭비되거나 격리 보호되나요?
+- 중복 유입 요청(네트워크 불안정으로 인한 재시도 등)에 대해 이 메서드는 안전한 멱등성(Idempotency) 방어책을 보유하고 있나요?
+- 코틀린의 널 세이프티 가드가 Java 라이브러리와 통신하는 interop 영역이나 JSON 파싱 시점에도 안전하게 유지되나요?
+- 고루틴이 백그라운드에서 영원히 차단되지 않고 제때 해제되도록 라이프사이클이 묶여 있나요?

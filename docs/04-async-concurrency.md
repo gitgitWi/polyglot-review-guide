@@ -3,41 +3,43 @@ title: "Async and Concurrency"
 category: "runtime"
 language: "both"
 order: 4
-summary: "Node.js async/await, Kotlin/Spring 스레드/트랜잭션, Go goroutine/context의 실행 모델 차이."
+summary: "Node.js 이벤트 루프 비동기 환경과 Kotlin/Spring의 멀티 스레드 기반 트랜잭션 환경, 그리고 Go의 경량 고루틴 및 컨텍스트 취소 모델의 차이점을 파악합니다."
 ---
 
 # Async and Concurrency
 
-## TypeScript/Node.js 기준점
+## TypeScript/Node.js 환경의 기준점
 
-Node.js에서 주요 과제는 event loop를 막지 않는 것, Promise 실행 순서, 병렬 실행 범위, backpressure다.
+Node.js 백엔드 구조에서 주요 설계 목표는 싱글 스레드 환경에서 동작하는 이벤트 루프(Event Loop)가 블로킹 연산으로 인해 멈추지 않도록 관리하는 것, 그리고 다수의 Promise가 실행될 때 병렬 제어 범위와 예외 전파 구조를 설계하는 것입니다.
 
 ```ts
 const a = await fetchA();
 const [b, c] = await Promise.all([fetchB(), fetchC()]);
 ```
 
-리뷰할 때는 "무엇이 동시에 실행되는가", "에러가 어디로 전파되는가", "취소/타임아웃이 있는가"를 본다.
+리뷰 시에는 "어느 작업들이 상호 의존 없이 동시에 실행될 수 있는가", "하나의 비동기 실패가 전체 파이프라인의 에러로 어떻게 번지는가(Unhandled Rejection 방지)", 그리고 "네트워크 지연 시 비동기 호출을 취소하거나 타임아웃을 강제하는 장치가 존재하는가"를 우선 확인합니다.
 
-## Kotlin/Spring MVC
+---
 
-Kotlin 서버는 Spring MVC, JDBC/JPA/jOOQ, transaction 기반인 경우가 많다. 이 stack에서는 `async/await` 감각보다 다음이 중요하다.
+## Kotlin/Spring MVC 스레드와 트랜잭션 관계
 
-- 요청당 worker thread가 할당된다.
-- DB transaction은 thread-local context에 묶인다.
-- `@Transactional` 경계 안에서 DB 작업을 묶는다.
-- 외부 I/O를 transaction 안에서 오래 잡으면 lock과 connection을 낭비한다.
+대부분의 Kotlin 기반 서버 애플리케이션은 Spring MVC 프레임워크와 JDBC/JPA 영속성 인프라를 조합한 멀티 스레드 아키텍처 환경에서 기동됩니다. 이 전통적인 환경에서는 TypeScript 식의 `async/await` 동시성 감각보다는 데이터베이스 트랜잭션과 스레드의 관계가 핵심입니다.
+
+- **스레드 당 요청 할당(Thread-per-request)**: 인바운드 HTTP 요청 하나당 WAS의 개별 워커 스레드가 지정되어 동기적으로 블로킹 I/O를 수행하며 서비스를 수행합니다.
+- **스레드 로컬과 트랜잭션 경계**: Spring의 DB 트랜잭션 컨텍스트는 기본적으로 해당 스레드 로컬(Thread-local) 정보에 결합되어 생명주기가 관리됩니다.
+- **트랜잭션 내부의 무거운 I/O 금지**: 트랜잭션 범위(`@Transactional`) 안에서 오랜 지연이 발생하는 외부 HTTP API 연동, 알림 메시지 발송, 메일 전송 작업을 호출하게 되면, 응답을 대기하는 동안 귀중한 DB 커넥션 풀 자원과 로우 락(Lock)을 과도하게 오래 점유하여 전체 커넥션 고갈 및 스레드 마비를 초래합니다.
 
 리뷰 포인트:
 
-- `@Transactional(readOnly = true)`와 write transaction이 의도대로 나뉘었는지 본다.
-- transaction 내부에서 HTTP call, email, push notification, long-running computation이 없는지 확인한다.
-- lock timeout, statement timeout, idempotency key, retry 정책이 일관되는지 본다.
-- coroutine을 도입한다면 blocking ORM/JDBC stack과 섞이는 비용을 별도로 검토한다.
+- **조회/수정 트랜잭션 분리 검증**: 단순 읽기 기능이 주를 이루는 유스케이스는 명시적으로 `@Transactional(readOnly = true)`를 적용해 데이터베이스 커넥션 낭비를 예방하고 읽기 전용 복제 데이터베이스(Read Replica) 라우팅 성능 최적화를 꾀하고 있는지 대조합니다.
+- **비즈니스 트랜잭션 범위 최소화**: 외부 결제 게이트웨이(PG) 호출이나 메일링 시스템 등 네트워크 지연 가능성이 큰 외부 호출이 비즈니스 트랜잭션 밖으로 완전히 격리되어 비동기 이벤트나 트랜잭션 전/후 처리기로 명확하게 구조 분리되어 설계되었는지 점검합니다.
+- **동시 요청 제어와 멱등성 보장**: 동일 요청이 동시에 중복 유입될 때 발생할 수 있는 데이터 정합성 충돌을 차단하기 위해, 락 타임아웃, 분산 락(Distributed Lock) 또는 멱등성 키(Idempotency Key) 검증 프로세스가 견고하게 장착되어 있는지 검증합니다.
 
-## Kotlin Coroutines
+---
 
-Kotlin coroutine은 lightweight concurrency 모델이다. Spring WebFlux나 coroutine-aware client와 함께 쓸 때 장점이 크다.
+## Kotlin 코루틴 (Coroutines)
+
+Kotlin 코루틴은 OS 스레드 수준의 컨텍스트 스위칭 비용 없이, 가벼운 비동기 프로그래밍을 가능하게 하는 협력적 멀티태스킹 프레임워크입니다. Spring WebFlux 환경이나 비동기 클라이언트 전용 라이브러리와 엮일 때 강력한 강점을 발휘합니다.
 
 ```kotlin
 suspend fun fetchUser(id: String): User
@@ -45,14 +47,14 @@ suspend fun fetchUser(id: String): User
 
 리뷰 포인트:
 
-- `suspend` 함수가 실제 non-blocking I/O를 쓰는지 확인한다.
-- blocking call을 coroutine dispatcher 위에서 무심코 호출하지 않는지 본다.
-- structured concurrency를 깨는 global coroutine scope 사용은 위험하다.
-- cancellation이 DB transaction과 어떻게 상호작용하는지 확인한다.
+- **코루틴 내 블로킹 호출 식별**: 일시 중단 함수(`suspend`) 블록 내부에서 데이터베이스 블로킹 JDBC 라이브러리나 기존 블로킹 API를 임의 호출하면 안 됩니다. 만약 이를 불가피하게 혼용해야 한다면, 별도의 블로킹 전용 디스패처인 `Dispatchers.IO` 위에서 코드가 명시적으로 격리되어 구동되도록 보호 코드가 들어갔는지 확인합니다.
+- **동시성 취소 전파 안정성**: 부모 코루틴의 수명 주기가 닫히거나 예외 발생 시 하위 태스크들이 리소스 누출 없이 구조화된 동시성(Structured Concurrency) 규약 하에 안전하게 동반 취소되는지 검증하며, 특히 코루틴이 임의 취소되었을 때 이미 실행되던 비즈니스 트랜잭션 데이터가 롤백(Rollback)을 정상적으로 수반하는지 점검합니다.
 
-## Go goroutine
+---
 
-Go의 goroutine은 싸게 만들 수 있는 concurrent execution unit이다.
+## Go 고루틴 (Goroutine)
+
+Go의 고루틴은 Go 런타임 시스템이 자체 스케줄링하는 매우 저렴한 경량 스레드입니다. 수천 개의 고루틴을 동시에 띄워 동시성 비즈니스를 매우 직관적인 동기식 형태의 코드로 작성할 수 있습니다.
 
 ```go
 go func() {
@@ -64,14 +66,14 @@ go func() {
 
 리뷰 포인트:
 
-- goroutine이 끝나는 조건이 있는지 본다.
-- parent context 취소를 받는지 확인한다.
-- channel send/receive가 block될 수 있는지 본다.
-- unbounded fan-out이면 semaphore, worker pool, `errgroup` 같은 제한이 필요하다.
+- **고루틴 누수(Goroutine Leak) 방지**: 띄워놓은 고루틴이 조건 불만족으로 인해 영구적으로 종료되지 않고 백그라운드에 남아 좀비 스레드가 되고 있지는 않은지 점검해야 합니다. 상위 컨텍스트 취소나 타이머 타임아웃이 발생하면 고루틴 내부 루프도 즉각 중단되고 소멸하도록 가드가 설계되었는지 모니터링해야 합니다.
+- **채널 송수신 데드락 제어**: 고루틴 간 메시지를 주고받는 채널(Channel) 송신/수신 흐름에서, 수신자가 없거나 버퍼 공간이 가득 차 송신부가 영구 차단(Blocked)되어 시스템이 멈추는 동시성 교착 상태(Deadlock) 가능성이 없는지 채널의 버퍼 크기와 클로저 수명 주기를 정밀히 모니터링합니다.
 
-## Go context
+---
 
-`context.Context`는 request cancellation, deadline, trace/request scoped value 전달의 표준 수단이다.
+## Go 컨텍스트 (Context)
+
+`context.Context`는 Go 생태계에서 서비스 간 요청 취소 신호, 처리 기한(Deadline), 그리고 추적성 유지를 위한 공통 컨텍스트 메타데이터를 전파하는 핵심 매개체입니다.
 
 ```go
 res, err := sender.Send(r.Context(), tokens, notification)
@@ -79,17 +81,7 @@ res, err := sender.Send(r.Context(), tokens, notification)
 
 리뷰 포인트:
 
-- HTTP request에서 시작한 I/O는 `r.Context()`를 전달해야 한다.
-- `context.WithTimeout`을 만들면 `defer cancel()`이 있어야 한다.
-- context를 struct field에 저장하지 않는다. 함수 인자로 전달한다.
-- request-scoped value는 남용하지 않는다. 필수 dependency 전달 용도가 아니다.
-
-## 비교 요약
-
-| 관심사 | TypeScript/Node.js | Kotlin/Spring | Go |
-|---|---|---|---|
-| 기본 실행 | event loop + Promise | request thread + transaction | goroutine + blocking I/O |
-| 병렬 실행 | `Promise.all` | thread/coroutine/executor | `go`, channel, context |
-| 취소 | AbortController | timeout, transaction rollback, coroutine cancellation | `context.Context` |
-| 실패 | throw/reject | exception + rollback | explicit `error` |
-| 리뷰 핵심 | await 순서, unhandled rejection | transaction 경계, lock, nullable | error wrapping, context, lifecycle |
+- **I/O 경계에서의 컨텍스트 연계**: HTTP 핸들러나 DB 연결 등 모든 외부 입출력이 수반되는 함수의 인자로 호출 스택 최하단(Database driver, HTTP Client 등)까지 끊김 없이 `ctx`를 전달하고 있는지 추적합니다.
+- **자원 해제 클로저 호출 보장**: `context.WithTimeout` 또는 `context.WithCancel`을 생성한 뒤 반환받는 `cancel` 함수가 리소스 정리를 완수하도록 `defer cancel()` 형식을 통해 함수의 종료부에서 지연 실행됨이 보장되어 있는지 확인합니다.
+- **멤버 필드로의 컨텍스트 보관 금지**: `Context`는 구조체의 고정 멤버 필드로 귀속시켜 상태로 영속화하지 않는 것이 대원칙입니다. 반드시 개별 함수의 첫 번째 인자(`func DoSomething(ctx context.Context, ...)`)로 매번 전달받아야 함을 준수했는지 확인합니다.
+- **인프라 의존성의 비정상적 주입 차단**: 컨텍스트에 추가 데이터를 담는 `context.WithValue` 기능은 오직 사용자 인증 메타데이터, 분산 트레이싱 ID 등의 공통 데이터 전달용으로만 극히 아껴 써야 합니다. 애플리케이션의 핵심 비즈니스 모듈이나 싱글톤 객체 인스턴스를 컨텍스트 뒤로 숨겨 전파하는 기형적 DI 우회 패턴으로 오용되고 있지 않은지 차단합니다.

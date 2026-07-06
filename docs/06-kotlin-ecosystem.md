@@ -3,94 +3,78 @@ title: "Kotlin Ecosystem"
 category: "ecosystem"
 language: "kotlin"
 order: 6
-summary: "Kotlin 서버 개발에서 자주 만나는 JVM, Spring, Ktor, Gradle, ORM, 테스트 생태계."
+summary: "Kotlin 서버 애플리케이션 개발의 핵심을 이루는 JVM 인프라, Spring Boot 아키텍처, Ktor 경량 엔진, ORM 생태계 및 테스트 도구들을 진단합니다."
 ---
 
 # Kotlin Ecosystem
 
-Kotlin은 언어 자체보다 JVM 생태계와 함께 이해해야 한다. 서버 프로젝트 대부분은 Java library, Gradle build, Spring Boot 또는 Ktor, JDBC/JPA/jOOQ, JUnit/Testcontainers를 조합한다.
+Kotlin 서버 코드를 원만하게 읽고 진단하려면 언어 자체의 기능뿐만 아니라 JVM(Java Virtual Machine) 인프라와 그 위에 쌓아 올린 견고한 오픈소스 에코시스템의 동작 관례를 포괄적으로 이해해야 합니다.
 
-## JVM과 Java interop
+---
 
-Kotlin은 JVM 위에서 실행된다. Java library를 거의 그대로 사용할 수 있고, Java 코드와 Kotlin 코드가 같은 프로젝트에 섞일 수 있다.
+## JVM 런타임과 Java Interop 경계면
 
-리뷰 포인트:
-
-- Java API가 반환하는 값은 Kotlin 타입상 non-null이어도 실제 null일 수 있다.
-- Java checked exception은 Kotlin에서 강제되지 않는다.
-- reflection, annotation processing, proxy 기반 framework가 Kotlin의 final class 기본값과 충돌할 수 있다.
-
-## Spring Boot
-
-Kotlin 서버에서 가장 흔한 선택이다.
-
-주요 구성:
-
-- `@RestController`, `@Service`, `@Repository`
-- constructor injection
-- `@ConfigurationProperties`
-- `@Transactional`
-- Bean Validation
-- Spring Security
-- Actuator, Micrometer
+Kotlin은 JVM 바이트코드로 컴파일되어 작동하므로 방대한 Java 생태계 라이브러리 및 레거시 코드를 매끄럽게 흡수합니다. 하지만 두 생태계가 만나는 지점(Interop)에서는 미묘한 패러다임 상충이 발생할 수 있습니다.
 
 리뷰 포인트:
 
-- controller는 얇고 service가 business rule을 가져야 한다.
-- `@Transactional`은 proxy 기반이므로 self-invocation 제약을 이해해야 한다.
-- Kotlin class는 기본 final이므로 Spring plugin 또는 all-open 설정이 필요할 수 있다.
-- `lateinit`과 nullable property로 configuration 문제를 숨기지 않는지 본다.
+- **플랫폼 타입(Platform Type) 널 유출 차단**: Java로 작성된 서드파티 라이브러리 API가 반환하는 값은 Kotlin 타입 상으로는 널 안정성을 보증하지 않는 '플랫폼 타입'(`T!`)으로 표시됩니다. 이를 안전 가드 없이 논-널 타입 변수에 다이렉트로 매핑하면 런타임 NullPointerException(NPE)이 돌발 발생하므로 반드시 유입 즉시 널 상태 검증(Validation)을 통과하도록 코딩되었는지 확인합니다.
+- **Java Checked Exception 무력화 인지**: Java 컴파일러가 강제하는 체크 예외(Checked Exception) 규약은 Kotlin 컴파일러 수준에서는 아무런 컴파일 경고를 내지 않고 묵인됩니다. 이에 따라 하위 레벨 Java API가 던질 수 있는 예외 종류를 문서나 코드로 직접 파악하고 코틀린 단에서 catch 블록으로 명확하게 방어하고 있는지 확인합니다.
+- **Kotlin 클래스 기본 final 속성과 프록시 충돌 방지**: Kotlin의 모든 클래스와 메서드는 기본적으로 외부 상속 및 재정의가 불가한 `final` 상태입니다. 그러나 Spring AOP, JPA 프록시, CGLIB 라이브러리 등은 런타임에 클래스를 상속해 동적 대역 객체(Proxy)를 빚어내야 하므로 상충이 생깁니다. 프로젝트 설정 파일(Gradle 등)에 `kotlin-spring` 플러그인이나 `all-open` 컴파일러 옵션이 올바르게 적용되어 컴파일 시점에 자동으로 상속 가능하도록 잠금이 해제되고 있는지 확인합니다.
 
-## Ktor
+---
 
-Ktor는 Spring보다 가벼운 Kotlin-native web framework다. coroutine 기반 API와 명시적인 routing이 특징이다.
+## Spring Boot 기반 엔터프라이즈 아키텍처
 
-리뷰 포인트:
-
-- plugin 설치 순서와 route scope를 확인한다.
-- coroutine cancellation과 blocking call 혼용을 본다.
-- Spring처럼 많은 convention을 제공하지 않으므로 explicit wiring 품질이 중요하다.
-
-## Persistence
-
-Kotlin 서버에서 자주 쓰는 선택지:
-
-- JPA/Hibernate: entity lifecycle, lazy loading, dirty checking
-- jOOQ: type-safe SQL, 명시적 query, schema 중심
-- Exposed: Kotlin DSL 기반 ORM/SQL toolkit
-- JDBC/R2DBC: 낮은 수준의 직접 접근
+Java 진영 최고의 프레임워크인 Spring Boot는 Kotlin 서버 개발 시에도 독보적인 주류 표준 아키텍처로 사용됩니다.
 
 리뷰 포인트:
 
-- JPA entity와 API DTO가 분리되어 있는가?
-- N+1 query, lazy loading boundary, transaction scope를 확인했는가?
-- jOOQ를 쓴다면 generated code와 migration이 동기화되는가?
-- money/ledger 성격의 도메인은 lock order와 transaction isolation이 명시적인가?
+- **생성자 주입과 final 의존성 맵핑**: 프레임워크의 의존성 바인딩은 필드 주입(`@Autowired`) 대신 final 속성의 주 생성자 주입 형태로 유연하게 연계되어 있고 순환 참조 여부가 컴파일 시점에 방지되는지 검증합니다.
+- **Spring AOP의 셀프 인보케이션(Self-invocation) 오동작 차단**: `@Transactional`이나 `@Cacheable` 같은 선언적 애노테이션들은 프록시 메커니즘을 타고 작동합니다. 같은 클래스 파일 내의 내부 헬퍼 메서드가 다른 메서드를 직접 호출(Self-invocation)하면 프록시 가로채기가 발생하지 않아 트랜잭션이 전혀 기동되지 않는 버그가 유발됩니다. 이러한 트랜잭션 우회 호출 실수가 없는지 점검합니다.
+- **lateinit 속성 오용 경계**: 주입 여부가 보장되지 않은 프로퍼티나 설정 인스턴스에 `lateinit var`를 남용하여 초기화 지연 예외를 방지하지 못하는 불안정한 코드가 없는지 진단합니다.
 
-## Build and Tooling
+---
 
-Kotlin 프로젝트는 대개 Gradle Kotlin DSL을 쓴다.
+## Ktor: 경량 코루틴 네이티브 웹 엔진
 
-리뷰 포인트:
-
-- Kotlin, Java toolchain, Spring Boot version이 호환되는가?
-- annotation processing 또는 KSP/kapt 설정이 필요한 library가 있는가?
-- dependency version drift가 없는가?
-- build script에 secret이 들어가 있지 않은가?
-
-## Testing
-
-일반적인 조합:
-
-- JUnit 5
-- Spring Boot Test
-- MockK 또는 Mockito Kotlin
-- Testcontainers
-- Kotest property testing
+Spring보다 가볍고 오직 Kotlin 고유의 코루틴 비동기 프로그래밍 모델 위에 내장된 경량 웹 엔진입니다.
 
 리뷰 포인트:
 
-- controller mapping, validation, security gate를 slice test로 확인하는가?
-- service invariant와 transaction behavior를 integration test로 확인하는가?
-- DB query는 실제 DB 또는 Testcontainers로 검증하는가?
-- property-based test가 domain invariant를 잘 표현하는가?
+- **명시적 라우팅 구성과 플러그인 우선순위**: 미들웨어 성격의 Ktor 플러그인(Feature)들이 알맞은 셋업 순서와 알맞은 라우트 스코프 단위로 인스턴스화되어 작동하는지 점검합니다.
+- **코루틴 비동기 자원 반환 안정성**: 비동기 협력 구조 상 I/O 블로킹 작업이 일어날 때 스케줄러가 데드락에 빠지지 않도록 non-blocking 아키텍처 규칙이 관철되고 있는지 확인합니다.
+
+---
+
+## 데이터베이스 영속성 (Persistence Layer)
+
+- **JPA / Hibernate (객체 관계 매핑)**: 가장 견고하지만 지연 로딩 및 프록시 제어로 인해 가장 까다로운 기술입니다.
+- **jOOQ (SQL 지향 빌더)**: DB 스키마로부터 소스코드를 생성하여 정적 타입 안전 쿼리를 컴파일 시점에 완벽히 작성해주는 명시적 데이터베이스 툴킷입니다.
+- **Exposed (JetBrains 네이티브 SQL DSL)**: Kotlin 고유의 DSL로 테이블 선언과 쿼리를 유연하게 관리하는 JetBrains의 공식 경량 라이브러리입니다.
+
+리뷰 포인트:
+
+- **JPA N+1 쿼리 방어 및 지연 로딩 경계**: 연관 관계 매핑(One-to-Many 등) 조회 시 단일 쿼리로 조회되지 않고 연관 자식 레코드 개수만큼 루프 쿼리가 연속 실행되어 DB 서버 리소스를 파괴하는 N+1 오류를 차단하기 위해 `join fetch` 또는 Entity Graph 가드가 설계되어 있는지 봅니다.
+- **DB 트랜잭션 격리 및 동시성 락의 명시성**: 재고 차감, 포인트 충전, 회계 원장 기록 등 데이터의 정합성 격리가 극히 우대되는 유스케이스에서는 비관적 락(Pessimistic Lock)이나 낙관적 락(Optimistic Lock) 기법이 격리 수준(Isolation Level)과 맞물려 완벽하게 제어되고 있는지 확인합니다.
+
+---
+
+## 빌드 및 빌드 툴체인 (Build System)
+
+대부분의 프로젝트는 `build.gradle.kts`를 필두로 하는 Gradle Kotlin DSL 환경을 유지합니다.
+
+리뷰 포인트:
+
+- **의존성 충돌 및 버전 관리 일원화**: 동일 라이브러리가 여러 버전으로 충돌하여 런타임에 클래스 부하 불일치 오류(NoSuchMethodError 등)를 내는 현상을 방지하도록 BOM(Bill of Materials) 도입이나 중앙화된 버전 카탈로그가 세워져 있는지 검토합니다.
+
+---
+
+## 검증 테스트 환경 (Testing Strategy)
+
+JUnit 5 프레임워크를 축으로 삼고 MockK(코루틴/코틀린 전용 Mock 툴), Kotest, Testcontainers 인프라를 활용합니다.
+
+리뷰 포인트:
+
+- **비즈니스 통합 테스트의 데이터 고립성**: 통합 테스트 구동 전/후 데이터가 서로 오염되어 다른 테스트 케이스에 영향을 주지 않도록 매 사이클마다 트랜잭션 롤백 정책이나 DB 클리너 유틸리티가 충실하게 연동되고 있는지 검증합니다.
+- **단위 슬라이스 테스트(Slice Test) 도입**: 전체 웹 애플리케이션 콘텍스트를 매번 띄우는 기동 지연 낭비를 방어하기 위해 컨트롤러 매핑이나 단순 검증 필터는 가볍게 슬라이스 테스트(`@WebMvcTest`) 형태로 유연하게 격리 작성하고 있는지 확인합니다.
