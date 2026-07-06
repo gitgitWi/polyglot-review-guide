@@ -1,7 +1,6 @@
 import Markdown from "marked-react";
 import { CodeBlock } from "../code-block";
 import type { GuideDoc } from "../../generated/guide-data";
-import styles from "./doc-content.module.css";
 
 interface DocContentProps {
   currentDoc: GuideDoc;
@@ -78,15 +77,22 @@ export function DocContent({ currentDoc, isRendering }: DocContentProps) {
   return (
     <article aria-busy={isRendering} className="doc-content">
       {toc.length > 0 && (
-        <div className={styles.tocBox}>
-          <h4 className={styles.tocTitle}>On this page</h4>
-          <ul className={styles.tocList}>
+        <div className="border border-[var(--hairline)] bg-[var(--surface-card)] rounded-xl p-5 mb-3">
+          <h4 className="text-[11px] font-bold uppercase tracking-wider text-[var(--stone)] m-0 mb-3.5">
+            On this page
+          </h4>
+          <ul className="list-none p-0 m-0 flex flex-col gap-2">
             {toc.map((item) => (
               <li
                 key={item.id}
-                className={`${styles.tocItem} ${item.level === 3 ? styles.level3 : styles.level2}`}
+                className={`leading-normal m-0 p-0 ${
+                  item.level === 3 ? "pl-4 border-l border-[var(--hairline-strong)] ml-0.5" : "pl-0"
+                }`}
               >
-                <a href={`#${item.id}`} className={styles.tocLink}>
+                <a
+                  href={`#${item.id}`}
+                  className="text-[13.5px] text-[var(--charcoal)] no-underline transition-colors duration-150 hover:text-[var(--orange)]"
+                >
                   {item.text}
                 </a>
               </li>
@@ -95,7 +101,9 @@ export function DocContent({ currentDoc, isRendering }: DocContentProps) {
         </div>
       )}
 
-      <Markdown value={cleanBody} renderer={renderer} />
+      <div className="markdown-body">
+        <Markdown value={cleanBody} renderer={renderer} />
+      </div>
     </article>
   );
 }

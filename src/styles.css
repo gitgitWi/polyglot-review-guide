@@ -406,12 +406,12 @@ a:focus-visible {
   width: 100%;
 }
 
-.doc-content > *:first-child {
+.markdown-body > *:first-child {
   margin-top: 0 !important;
   border-top: 0 !important;
 }
 
-.doc-content h1 {
+.markdown-body h1 {
   margin: 0 0 32px;
   color: var(--ink);
   font-family: var(--font-display);
@@ -421,7 +421,7 @@ a:focus-visible {
   letter-spacing: -0.02em;
 }
 
-.doc-content h2 {
+.markdown-body h2 {
   margin: 48px 0 16px;
   border-top: 1px solid var(--hairline);
   padding-top: 36px;
@@ -433,7 +433,7 @@ a:focus-visible {
   scroll-margin-top: 96px;
 }
 
-.doc-content h3 {
+.markdown-body h3 {
   margin: 32px 0 12px;
   color: var(--ink);
   font-size: 18px;
@@ -441,34 +441,34 @@ a:focus-visible {
   scroll-margin-top: 96px;
 }
 
-.doc-content p,
-.doc-content li {
+.markdown-body p,
+.markdown-body li {
   color: var(--body);
   font-size: 15px;
   line-height: 1.75;
 }
 
-.doc-content p {
+.markdown-body p {
   margin: 16px 0;
 }
 
-.doc-content ul {
+.markdown-body ul {
   list-style-type: disc;
   margin: 12px 0 24px;
   padding-left: 20px;
 }
 
-.doc-content ol {
+.markdown-body ol {
   list-style-type: decimal;
   margin: 12px 0 24px;
   padding-left: 20px;
 }
 
-.doc-content li {
+.markdown-body li {
   margin-bottom: 8px;
 }
 
-.doc-content li:last-child {
+.markdown-body li:last-child {
   margin-bottom: 0;
 }
 
@@ -842,7 +842,7 @@ tr:last-child td {
     padding: 40px 24px 96px;
   }
 
-  .doc-content h1 {
+  .markdown-body h1 {
     font-size: 40px;
   }
 
@@ -864,7 +864,7 @@ tr:last-child td {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .doc-content h1 {
+  .markdown-body h1 {
     font-size: 34px;
   }
 
