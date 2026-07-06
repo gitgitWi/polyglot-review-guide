@@ -1,6 +1,6 @@
 import React from "react";
 import { ArrowRight, HelpCircle, Sparkles } from "lucide-react";
-import styles from "./QuizView.module.css";
+import styles from "./quiz-view.module.css";
 
 interface QuizViewProps {
   onBackToGuide: () => void;

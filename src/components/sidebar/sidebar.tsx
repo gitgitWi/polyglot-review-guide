@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Languages, Search, X } from "lucide-react";
 import type { GuideDoc } from "../../generated/guide-data";
 import { useGuideStore, type LanguageFilter } from "../../store/guide-store";
-import styles from "./Sidebar.module.css";
+import styles from "./sidebar.module.css";
 
 interface SidebarProps {
   isOpen: boolean;

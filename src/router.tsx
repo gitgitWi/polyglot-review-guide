@@ -10,10 +10,10 @@ import { guideDocs, type GuideDoc } from "./generated/guide-data";
 import { useGuideStore, type LanguageFilter } from "./store/guide-store";
 
 // Import modular components
-import { Sidebar } from "./components/Sidebar/Sidebar";
-import { Topbar } from "./components/Topbar/Topbar";
-import { DocContent } from "./components/DocContent/DocContent";
-import { QuizView } from "./components/Quiz/QuizView";
+import { Sidebar } from "./components/sidebar";
+import { Topbar } from "./components/topbar";
+import { DocContent } from "./components/doc-content";
+import { QuizView } from "./components/quiz";
 
 const rootRoute = createRootRoute({
   component: RootLayout,

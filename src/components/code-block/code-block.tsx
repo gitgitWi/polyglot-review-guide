@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { createBundledHighlighter, createSingletonShorthands } from "shiki/core";
 import { createJavaScriptRegexEngine } from "shiki/engine/javascript";
-import styles from "./CodeBlock.module.css";
+import styles from "./code-block.module.css";
 
 const bundledLanguages = {
   go: () => import("@shikijs/langs/go"),
