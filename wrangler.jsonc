@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "polyglot-review-guide",
+  "compatibility_date": "2026-07-06",
+  // Static-assets-only deployment: serve the Vite `dist/` output.
+  "assets": {
+    "directory": "dist",
+    // SPA fallback: serve index.html (HTTP 200) for client-routed paths such as
+    // /guide/:id and /tags/:tag. This replaces the `_redirects` `/* /index.html 200`
+    // rule, which the Workers static-assets platform rejects as an infinite loop
+    // (serving /index.html normalizes back to / and re-matches the /* rule).
+    "not_found_handling": "single-page-application"
+  }
+}

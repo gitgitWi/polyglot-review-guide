@@ -39,21 +39,25 @@ The build script:
 3. Builds the Vite app to `dist/`.
 4. Validates public-facing content and Cloudflare Pages assets.
 
-## Cloudflare Pages
+## Cloudflare (Workers static assets)
 
-For a Git-connected Cloudflare Pages project, use:
+The Git-connected deployment builds with `bun run build` and serves `dist/` as a
+static-assets Worker. Configuration lives in `wrangler.jsonc`:
 
-- Build command: `bun run build`
-- Build output directory: `dist`
+- `assets.directory: "dist"` — the build output.
+- `assets.not_found_handling: "single-page-application"` — serves `index.html`
+  (HTTP 200) for client-routed paths such as `/guide/:id` and `/tags/:tag`.
 
-The `public/_redirects` file is copied into `dist/_redirects` so direct links to TanStack Router routes work as SPA routes.
+> SPA routing is handled by `not_found_handling`, **not** a `_redirects` file. On
+> the Workers static-assets platform a `/* /index.html 200` redirect is rejected
+> as an infinite loop (serving `/index.html` normalizes back to `/` and re-matches
+> the `/*` rule), so no `_redirects` file is shipped.
 
-For release-based direct upload deployments, `.github/workflows/release-production.yml` uses Cloudflare Wrangler Action with:
-
-- `CLOUDFLARE_ACCOUNT_ID`
-- `CLOUDFLARE_API_TOKEN`
-
-The workflow passes `pages deploy dist --project-name=polyglot-review-guide` directly, so a `wrangler.toml` file is not required. Add one only if you want Wrangler defaults such as `pages_build_output_dir` to be shared between local CLI usage and CI.
+`.github/workflows/release-production.yml` also has a manual/release-triggered
+job that currently runs `wrangler pages deploy` (classic Cloudflare Pages). That
+is a separate target from the Workers static-assets deployment above; if you rely
+on it, align it to `wrangler deploy` so it uses this same `wrangler.jsonc`
+configuration. It reads `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN`.
 
 ## Content Structure
 

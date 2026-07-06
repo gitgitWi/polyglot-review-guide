@@ -10,11 +10,22 @@ const requiredFiles = [
   "src/router.tsx",
   "src/generated/guide-data.ts",
   "dist/index.html",
-  "dist/_redirects",
+  "wrangler.jsonc",
 ];
 
 for (const file of requiredFiles) {
   await access(path.join(root, file));
+}
+
+// SPA routing on Cloudflare Workers static assets is handled by
+// not_found_handling, not a `_redirects` rewrite (which the platform rejects as
+// an infinite loop). Guard against regressing that config.
+const wranglerConfig = await readFile(path.join(root, "wrangler.jsonc"), "utf8");
+if (!wranglerConfig.includes('"directory": "dist"')) {
+  throw new Error('wrangler.jsonc: assets.directory must be "dist"');
+}
+if (!wranglerConfig.includes('"not_found_handling": "single-page-application"')) {
+  throw new Error('wrangler.jsonc: assets.not_found_handling must be "single-page-application" for SPA routing');
 }
 
 const docs = (await readdir(path.join(root, "docs"))).filter((file) => file.endsWith(".md"));
@@ -41,4 +52,4 @@ for (const file of docs) {
   seenOrders.add(order);
 }
 
-console.log(`Validated ${docs.length} Markdown files and Cloudflare Pages assets`);
+console.log(`Validated ${docs.length} Markdown files and Cloudflare deploy config`);
