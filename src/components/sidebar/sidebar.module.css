@@ -19,41 +19,24 @@
 }
 
 .brand {
-  display: grid;
-  grid-template-columns: 48px minmax(0, 1fr);
-  gap: 14px;
+  display: flex;
   align-items: center;
-  width: 100%;
-}
-
-.brandMark {
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  border: 1px solid var(--hairline-strong);
-  border-radius: 12px;
-  background: var(--surface-elevated);
-  color: var(--ink);
-  box-shadow: 0 0 32px var(--green-glow);
-}
-
-.brandKicker {
-  margin: 0 0 6px;
-  color: var(--ash);
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 1.5;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  text-decoration: none;
 }
 
 .brandTitle {
   margin: 0;
   color: var(--ink);
-  font-size: 18px;
-  font-weight: 500;
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 400;
   line-height: 1.25;
+  letter-spacing: -0.02em;
+  transition: color 150ms ease;
+}
+
+.brandTitle:hover {
+  color: var(--orange);
 }
 
 .sidebarCloseBtn {
@@ -63,31 +46,6 @@
   color: var(--mute);
   cursor: pointer;
   padding: 4px;
-}
-
-.heroPanel {
-  margin-bottom: 20px;
-  border: 1px solid var(--hairline);
-  border-radius: 12px;
-  background:
-    linear-gradient(135deg, rgba(255, 128, 31, 0.08), transparent 52%), var(--surface-card);
-  padding: 20px;
-}
-
-.eyebrow {
-  margin: 0 0 6px;
-  color: var(--ash);
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1.5;
-  text-transform: uppercase;
-}
-
-.heroPanel p:last-child {
-  margin: 0;
-  color: var(--charcoal);
-  font-size: 14px;
-  line-height: 1.55;
 }
 
 .searchBox {

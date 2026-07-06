@@ -1,0 +1,236 @@
+.homeContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.heroSection {
+  position: relative;
+  overflow: hidden;
+  padding: 96px 44px 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border-bottom: 1px solid var(--hairline);
+  background: var(--canvas);
+}
+
+.accentGlow {
+  position: absolute;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 300px;
+  border-radius: 999px;
+  background: radial-gradient(circle, var(--orange-glow) 0%, transparent 70%);
+  filter: blur(40px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 2;
+  max-width: 780px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--hairline-strong);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--body);
+  padding: 6px 14px;
+  margin-bottom: 28px;
+}
+
+.displayHeadline {
+  font-family: var(--font-display);
+  font-size: 64px;
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  margin: 0 0 24px;
+}
+
+.heroSub {
+  color: var(--charcoal);
+  font-size: 17px;
+  line-height: 1.65;
+  margin: 0 0 36px;
+}
+
+.ctaGroup {
+  display: flex;
+  justify-content: center;
+}
+
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  background: var(--ink);
+  color: #000;
+  border: 0;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 0 24px;
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    transform 150ms ease;
+}
+
+.primaryBtn:hover {
+  background: var(--light);
+  transform: translateY(-1px);
+}
+
+.roadmapSection {
+  max-width: 1040px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 64px 44px 128px;
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--ink);
+  margin: 0 0 32px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-card);
+  border: 1px solid var(--hairline-strong);
+  border-radius: 12px;
+  padding: 28px;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.card:hover {
+  border-color: rgba(255, 255, 255, 0.22);
+  background: var(--surface-elevated);
+  transform: translateY(-2px);
+}
+
+.cardHeader {
+  margin-bottom: 20px;
+}
+
+.cardLangBadge {
+  display: inline-flex;
+  background: var(--orange-glow);
+  color: var(--orange);
+  border: 1px solid rgba(255, 128, 31, 0.2);
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  letter-spacing: 0.05em;
+}
+
+.cardLangBadgeGo {
+  display: inline-flex;
+  background: var(--blue-glow);
+  color: var(--blue);
+  border: 1px solid rgba(0, 117, 255, 0.2);
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  letter-spacing: 0.05em;
+}
+
+.cardLangBadgeAi {
+  display: inline-flex;
+  background: var(--green-glow);
+  color: var(--green);
+  border: 1px solid rgba(34, 255, 153, 0.2);
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  letter-spacing: 0.05em;
+}
+
+.card h4 {
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+
+.card p {
+  color: var(--charcoal);
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0 0 24px;
+  flex: 1;
+}
+
+.cardLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cardLink:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 960px) {
+  .heroSection {
+    padding: 64px 24px 48px;
+  }
+
+  .displayHeadline {
+    font-size: 48px;
+  }
+
+  .roadmapSection {
+    padding: 48px 24px 96px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .displayHeadline {
+    font-size: 36px;
+  }
+
+  .heroSub {
+    font-size: 15px;
+  }
+}

@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Languages, Search, X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import type { GuideDoc } from "../../generated/guide-data";
 import { useGuideStore, type LanguageFilter } from "../../store/guide-store";
 import styles from "./sidebar.module.css";
@@ -23,15 +23,9 @@ export function Sidebar({ isOpen, onClose, visibleDocs, currentDoc }: SidebarPro
       aria-label="Guide navigation"
     >
       <div className={styles.sidebarHeader}>
-        <div className={styles.brand}>
-          <div className={styles.brandMark} aria-hidden="true">
-            <Languages size={22} strokeWidth={1.8} />
-          </div>
-          <div>
-            <p className={styles.brandKicker}>Alan presents</p>
-            <h1 className={styles.brandTitle}>Polyglot Guide</h1>
-          </div>
-        </div>
+        <Link to="/" className={styles.brand}>
+          <h1 className={styles.brandTitle}>Polyglot Guide</h1>
+        </Link>
         <button
           className={styles.sidebarCloseBtn}
           type="button"
@@ -40,11 +34,6 @@ export function Sidebar({ isOpen, onClose, visibleDocs, currentDoc }: SidebarPro
         >
           <X size={20} />
         </button>
-      </div>
-
-      <div className={styles.heroPanel}>
-        <p className={styles.eyebrow}>Kotlin · Go · field guide</p>
-        <p>TypeScript 개발자 관점에서 대형 언어 생태계 코드를 읽고 분석하기 위한 전문 기술 백서.</p>
       </div>
 
       <label className={styles.searchBox}>

@@ -14,6 +14,7 @@ import { Sidebar } from "./components/sidebar";
 import { Topbar } from "./components/topbar";
 import { DocContent } from "./components/doc-content";
 import { QuizView } from "./components/quiz";
+import { HomeView } from "./components/home-view";
 
 const rootRoute = createRootRoute({
   component: RootLayout,
@@ -46,17 +47,26 @@ function RootLayout() {
 }
 
 function GuideIndex() {
-  const first = guideDocs[0];
-  return <GuideShell selectedDoc={first} />;
+  return <GuideShell isHome={true} />;
 }
 
 function GuideDetail() {
   const { docId } = useParams({ from: "/guide/$docId" });
   const selectedDoc = guideDocs.find((doc) => doc.id === docId) ?? guideDocs[0];
-  return <GuideShell selectedDoc={selectedDoc} />;
+  return <GuideShell selectedDoc={selectedDoc} isHome={false} />;
 }
 
-function GuideShell({ selectedDoc }: { selectedDoc: GuideDoc }) {
+const homeMetaDoc: GuideDoc = {
+  id: "home",
+  title: "Polyglot Guide",
+  summary: "TypeScript 개발자를 위한 Kotlin/Go 코드 리뷰 가이드북",
+  category: "Guidebook",
+  language: "Overview",
+  wordCount: guideDocs.reduce((acc, d) => acc + d.wordCount, 0),
+  body: "",
+};
+
+function GuideShell({ selectedDoc, isHome = false }: { selectedDoc?: GuideDoc; isHome?: boolean }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"guide" | "quiz">("guide");
 
@@ -64,15 +74,17 @@ function GuideShell({ selectedDoc }: { selectedDoc: GuideDoc }) {
   const language = useGuideStore((state) => state.language);
   const visibleDocs = filterDocs(query, language);
 
-  const currentDoc = visibleDocs.some((doc) => doc.id === selectedDoc.id)
-    ? selectedDoc
-    : (visibleDocs[0] ?? selectedDoc);
+  const currentDoc = isHome
+    ? homeMetaDoc
+    : selectedDoc && visibleDocs.some((doc) => doc.id === selectedDoc.id)
+      ? selectedDoc
+      : (visibleDocs[0] ?? selectedDoc ?? homeMetaDoc);
 
   // Close sidebar and reset tab to guide when route/doc changes
   useEffect(() => {
     setIsSidebarOpen(false);
     setActiveTab("guide");
-  }, [selectedDoc]);
+  }, [selectedDoc, isHome]);
 
   return (
     <div className="app-shell">
@@ -102,7 +114,9 @@ function GuideShell({ selectedDoc }: { selectedDoc: GuideDoc }) {
           onMenuOpen={() => setIsSidebarOpen(true)}
         />
 
-        {activeTab === "guide" ? (
+        {isHome ? (
+          <HomeView docs={guideDocs} />
+        ) : activeTab === "guide" ? (
           <>
             <section className="summary-band">
               <div>
