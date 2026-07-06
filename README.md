@@ -11,6 +11,8 @@ Alan is used as an example product brand, but the content is intentionally writt
 - Vite
 - React
 - TanStack Router
+- Zustand
+- Shiki
 - TypeScript
 - Markdown source files
 - Cloudflare Pages-compatible static build

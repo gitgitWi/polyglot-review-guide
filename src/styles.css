@@ -353,7 +353,7 @@ code {
   font-size: 0.9em;
 }
 
-pre {
+.code-frame {
   overflow: auto;
   border: 1px solid var(--hairline);
   border-radius: 12px;
@@ -361,7 +361,12 @@ pre {
   margin: 20px 0;
 }
 
-pre code {
+.code-frame .shiki {
+  margin: 0;
+  background: transparent !important;
+}
+
+.code-frame pre code {
   display: block;
   min-width: max-content;
   border: 0;
@@ -375,6 +380,7 @@ pre code {
 .code-label {
   min-height: 30px;
   border-bottom: 1px solid var(--hairline);
+  background: var(--surface-card);
   padding: 7px 12px 0;
   color: var(--ash);
   font-family: "Geist Mono", "SFMono-Regular", Consolas, monospace;

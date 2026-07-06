@@ -14,12 +14,9 @@ import {
   Outlet,
   useParams,
 } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect } from "react";
 import { guideDocs, type GuideDoc } from "./generated/guide-data";
-
-type GuideSearch = {
-  lang: "all" | "kotlin" | "go" | "both";
-};
+import { useGuideStore, type LanguageFilter } from "./store/guide-store";
 
 const rootRoute = createRootRoute({
   component: RootLayout,
@@ -63,13 +60,22 @@ function GuideDetail() {
 }
 
 function GuideShell({ selectedDoc }: { selectedDoc: GuideDoc }) {
-  const [query, setQuery] = useState("");
-  const [language, setLanguage] = useState<GuideSearch["lang"]>("all");
+  const query = useGuideStore((state) => state.query);
+  const language = useGuideStore((state) => state.language);
+  const renderedHtml = useGuideStore((state) => state.renderedHtml);
+  const isRendering = useGuideStore((state) => state.isRendering);
+  const setQuery = useGuideStore((state) => state.setQuery);
+  const setLanguage = useGuideStore((state) => state.setLanguage);
+  const renderDocument = useGuideStore((state) => state.renderDocument);
   const visibleDocs = filterDocs(query, language);
 
   const currentDoc = visibleDocs.some((doc) => doc.id === selectedDoc.id)
     ? selectedDoc
     : visibleDocs[0] ?? selectedDoc;
+
+  useEffect(() => {
+    void renderDocument(currentDoc);
+  }, [currentDoc, renderDocument]);
 
   return (
     <div className="app-shell">
@@ -116,7 +122,7 @@ function GuideShell({ selectedDoc }: { selectedDoc: GuideDoc }) {
               className={language === value ? "is-active" : ""}
               key={value}
               type="button"
-              onClick={() => setLanguage(value as GuideSearch["lang"])}
+              onClick={() => setLanguage(value as LanguageFilter)}
             >
               {label}
             </button>
@@ -160,15 +166,16 @@ function GuideShell({ selectedDoc }: { selectedDoc: GuideDoc }) {
         </section>
 
         <article
+          aria-busy={isRendering}
           className="doc-content"
-          dangerouslySetInnerHTML={{ __html: renderMarkdown(currentDoc.body) }}
+          dangerouslySetInnerHTML={{ __html: renderedHtml }}
         />
       </main>
     </div>
   );
 }
 
-function filterDocs(query: string, language: GuideSearch["lang"]) {
+function filterDocs(query: string, language: LanguageFilter) {
   const normalized = query.trim().toLowerCase();
   return guideDocs.filter((doc) => {
     const languageMatches =
@@ -176,122 +183,4 @@ function filterDocs(query: string, language: GuideSearch["lang"]) {
     const text = `${doc.title} ${doc.summary} ${doc.category} ${doc.body}`.toLowerCase();
     return languageMatches && text.includes(normalized);
   });
-}
-
-function escapeHtml(value: string) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;");
-}
-
-function inlineMarkdown(value: string) {
-  return escapeHtml(value)
-    .replace(/`([^`]+)`/g, "<code>$1</code>")
-    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-}
-
-function renderMarkdown(markdown: string) {
-  const lines = markdown.split("\n");
-  const html: string[] = [];
-  let inCode = false;
-  let codeLang = "";
-  let codeLines: string[] = [];
-  let listOpen = false;
-  let tableLines: string[] = [];
-
-  const closeList = () => {
-    if (listOpen) {
-      html.push("</ul>");
-      listOpen = false;
-    }
-  };
-
-  const flushTable = () => {
-    if (tableLines.length === 0) return;
-    const rows = tableLines
-      .filter((line) => !/^\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?$/.test(line))
-      .map((line) =>
-        line
-          .trim()
-          .replace(/^\|/, "")
-          .replace(/\|$/, "")
-          .split("|")
-          .map((cell) => cell.trim()),
-      );
-    if (rows.length > 0) {
-      const [head, ...body] = rows;
-      html.push('<div class="table-wrap"><table><thead><tr>');
-      html.push(head.map((cell) => `<th>${inlineMarkdown(cell)}</th>`).join(""));
-      html.push("</tr></thead><tbody>");
-      for (const row of body) {
-        html.push("<tr>");
-        html.push(row.map((cell) => `<td>${inlineMarkdown(cell)}</td>`).join(""));
-        html.push("</tr>");
-      }
-      html.push("</tbody></table></div>");
-    }
-    tableLines = [];
-  };
-
-  for (const line of lines) {
-    if (line.startsWith("```")) {
-      flushTable();
-      closeList();
-      if (!inCode) {
-        inCode = true;
-        codeLang = line.slice(3).trim();
-        codeLines = [];
-      } else {
-        const label = codeLang ? `<span>${escapeHtml(codeLang)}</span>` : "";
-        html.push(
-          `<pre><div class="code-label">${label}</div><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`,
-        );
-        inCode = false;
-      }
-      continue;
-    }
-
-    if (inCode) {
-      codeLines.push(line);
-      continue;
-    }
-
-    if (line.trim().startsWith("|") && line.includes("|")) {
-      closeList();
-      tableLines.push(line);
-      continue;
-    }
-    flushTable();
-
-    if (line.startsWith("# ")) {
-      closeList();
-      html.push(`<h1>${inlineMarkdown(line.slice(2))}</h1>`);
-    } else if (line.startsWith("## ")) {
-      closeList();
-      html.push(`<h2>${inlineMarkdown(line.slice(3))}</h2>`);
-    } else if (line.startsWith("### ")) {
-      closeList();
-      html.push(`<h3>${inlineMarkdown(line.slice(4))}</h3>`);
-    } else if (/^- /.test(line)) {
-      if (!listOpen) {
-        html.push("<ul>");
-        listOpen = true;
-      }
-      html.push(`<li>${inlineMarkdown(line.slice(2))}</li>`);
-    } else if (/^\d+\. /.test(line)) {
-      closeList();
-      html.push(`<p class="numbered">${inlineMarkdown(line)}</p>`);
-    } else if (line.trim() === "") {
-      closeList();
-    } else {
-      closeList();
-      html.push(`<p>${inlineMarkdown(line)}</p>`);
-    }
-  }
-
-  flushTable();
-  closeList();
-  return html.join("\n");
 }
