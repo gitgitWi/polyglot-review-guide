@@ -50,10 +50,12 @@ for (const file of docs) {
   if (raw.includes("/Users/") || raw.includes("~/")) {
     throw new Error(`${file}: contains local filesystem path`);
   }
-  const order = raw.match(/^order:\s*(\d+)/m)?.[1];
-  if (!order) {
+  // order may be a decimal (e.g. 2.5) to slot a doc between two integers.
+  const orderRaw = raw.match(/^order:\s*([\d.]+)/m)?.[1];
+  if (!orderRaw || !Number.isFinite(Number(orderRaw))) {
     throw new Error(`${file}: missing numeric order`);
   }
+  const order = Number(orderRaw);
   if (seenOrders.has(order)) {
     throw new Error(`${file}: duplicated order ${order}`);
   }
