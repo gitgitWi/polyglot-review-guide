@@ -127,16 +127,19 @@ export const guideDocs: GuideDoc[] = [
     "category": "runtime",
     "language": "both",
     "order": 4,
-    "summary": "Node.js 이벤트 루프 비동기 환경과 Kotlin/Spring의 멀티 스레드 기반 트랜잭션 환경, 그리고 Go의 경량 고루틴 및 컨텍스트 취소 모델의 차이점을 파악합니다.",
+    "summary": "Node.js 단일 스레드 이벤트 루프, JVM/Spring의 요청당 스레드, Kotlin 코루틴의 구조화된 동시성, Go 고루틴의 M:N 스케줄러를 Mermaid로 시각화해 비교하고, 각 도구를 언제 쓰고 언제 쓰지 말아야 하는지 판단 기준과 심화 학습 자료를 정리합니다.",
     "tags": [
       "concurrency",
       "coroutines",
       "goroutines",
       "context",
       "transactions",
-      "runtime-model"
+      "runtime-model",
+      "event-loop",
+      "structured-concurrency",
+      "parallelism"
     ],
-    "wordCount": 888
+    "wordCount": 1815
   },
   {
     "id": "validation-errors",
