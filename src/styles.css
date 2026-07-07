@@ -472,6 +472,34 @@ a:focus-visible {
   margin-bottom: 0;
 }
 
+/* Prose links. Only rendered-markdown links get this treatment — the ToC and
+   prev/next nav links live outside .markdown-body and keep their own styles. A
+   subtle always-on underline makes links identifiable (not color alone), and
+   hover strengthens the color and underline. */
+.markdown-body a {
+  color: var(--crimson);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--crimson) 35%, transparent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  transition:
+    color 0.15s ease,
+    text-decoration-color 0.15s ease,
+    text-decoration-thickness 0.15s ease;
+}
+
+.markdown-body a:hover {
+  color: color-mix(in srgb, var(--crimson) 78%, white);
+  text-decoration-color: currentColor;
+  text-decoration-thickness: 2px;
+}
+
+/* Inline code inside a link should read as part of the link, not a code chip. */
+.markdown-body a code {
+  color: inherit;
+}
+
 .markdown-body blockquote {
   margin: 24px 0;
   border: 1px solid var(--hairline);
