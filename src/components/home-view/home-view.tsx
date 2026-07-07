@@ -36,7 +36,7 @@ export function HomeView({ docs }: HomeViewProps) {
             </Link>
             <Link
               to="/tags"
-              className="inline-flex h-11 items-center gap-2 rounded-lg border border-[var(--hairline-strong)] px-[18px] text-[14px] font-medium text-[var(--body)] no-underline transition-colors hover:border-[var(--orange)] hover:text-[var(--orange)]"
+              className="inline-flex h-11 items-center gap-2 rounded-lg border border-[var(--hairline-strong)] px-[18px] text-[14px] font-medium text-[var(--body)] no-underline transition-colors hover:border-[var(--crimson)] hover:text-[var(--crimson)]"
             >
               <Tag size={15} /> 태그로 탐색
             </Link>
@@ -61,7 +61,7 @@ export function HomeView({ docs }: HomeViewProps) {
               to="/guide/$docId"
               params={{ docId: "kotlin-spring-review" }}
               onClick={() => setLanguage("kotlin")}
-              className={styles.cardLink}
+              className={`${styles.cardLink} ${styles.cardLinkKotlin}`}
             >
               Kotlin 리뷰 핵심 보기
               <ArrowRight size={14} />
@@ -82,7 +82,7 @@ export function HomeView({ docs }: HomeViewProps) {
               to="/guide/$docId"
               params={{ docId: "go-service-review" }}
               onClick={() => setLanguage("go")}
-              className={styles.cardLink}
+              className={`${styles.cardLink} ${styles.cardLinkGo}`}
             >
               Go 리뷰 핵심 보기
               <ArrowRight size={14} />
@@ -103,7 +103,7 @@ export function HomeView({ docs }: HomeViewProps) {
               to="/guide/$docId"
               params={{ docId: "ai-code-review-checklist" }}
               onClick={() => setLanguage("both")}
-              className={styles.cardLink}
+              className={`${styles.cardLink} ${styles.cardLinkAi}`}
             >
               AI 체크리스트 보기
               <ArrowRight size={14} />

@@ -111,9 +111,9 @@
   font-size: 9px;
   font-weight: 700;
   text-transform: uppercase;
-  background: var(--orange-glow);
-  color: var(--orange);
-  border: 1px solid rgba(255, 128, 31, 0.2);
+  background: var(--crimson-glow);
+  color: var(--crimson);
+  border: 1px solid rgba(232, 99, 122, 0.2);
   border-radius: 4px;
   padding: 1px 4px;
   margin-left: 2px;

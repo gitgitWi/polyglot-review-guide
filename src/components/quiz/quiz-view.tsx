@@ -1,11 +1,8 @@
+import { Link } from "@tanstack/react-router";
 import { ArrowRight, HelpCircle, Sparkles } from "lucide-react";
 import styles from "./quiz-view.module.css";
 
-interface QuizViewProps {
-  onBackToGuide: () => void;
-}
-
-export function QuizView({ onBackToGuide }: QuizViewProps) {
+export function QuizView() {
   return (
     <section className={styles.quizContainer}>
       <div className={styles.quizHero}>
@@ -72,10 +69,10 @@ fun processOrder(orderId: UUID) {
               TypeScript 개발자를 위한 맞춤형 코드 리뷰 모의 퀴즈 기능이 곧 제공됩니다. 상세 퀴즈
               셋업 및 채점 로직이 탑재될 예정입니다.
             </p>
-            <button className={styles.comingSoonBtn} type="button" onClick={onBackToGuide}>
+            <Link to="/" className={styles.comingSoonBtn}>
               가이드 독서로 돌아가기
               <ArrowRight size={14} style={{ marginLeft: "6px" }} />
-            </button>
+            </Link>
           </div>
         </div>
       </div>

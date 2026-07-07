@@ -9,11 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as QuizRouteImport } from './routes/quiz'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TagsIndexRouteImport } from './routes/tags/index'
 import { Route as TagsTagRouteImport } from './routes/tags/$tag'
 import { Route as GuideDocIdRouteImport } from './routes/guide/$docId'
 
+const QuizRoute = QuizRouteImport.update({
+  id: '/quiz',
+  path: '/quiz',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -37,12 +43,14 @@ const GuideDocIdRoute = GuideDocIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/quiz': typeof QuizRoute
   '/guide/$docId': typeof GuideDocIdRoute
   '/tags/$tag': typeof TagsTagRoute
   '/tags/': typeof TagsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/quiz': typeof QuizRoute
   '/guide/$docId': typeof GuideDocIdRoute
   '/tags/$tag': typeof TagsTagRoute
   '/tags': typeof TagsIndexRoute
@@ -50,20 +58,22 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/quiz': typeof QuizRoute
   '/guide/$docId': typeof GuideDocIdRoute
   '/tags/$tag': typeof TagsTagRoute
   '/tags/': typeof TagsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/guide/$docId' | '/tags/$tag' | '/tags/'
+  fullPaths: '/' | '/quiz' | '/guide/$docId' | '/tags/$tag' | '/tags/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/guide/$docId' | '/tags/$tag' | '/tags'
-  id: '__root__' | '/' | '/guide/$docId' | '/tags/$tag' | '/tags/'
+  to: '/' | '/quiz' | '/guide/$docId' | '/tags/$tag' | '/tags'
+  id: '__root__' | '/' | '/quiz' | '/guide/$docId' | '/tags/$tag' | '/tags/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  QuizRoute: typeof QuizRoute
   GuideDocIdRoute: typeof GuideDocIdRoute
   TagsTagRoute: typeof TagsTagRoute
   TagsIndexRoute: typeof TagsIndexRoute
@@ -71,6 +81,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/quiz': {
+      id: '/quiz'
+      path: '/quiz'
+      fullPath: '/quiz'
+      preLoaderRoute: typeof QuizRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -104,6 +121,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  QuizRoute: QuizRoute,
   GuideDocIdRoute: GuideDocIdRoute,
   TagsTagRoute: TagsTagRoute,
   TagsIndexRoute: TagsIndexRoute,

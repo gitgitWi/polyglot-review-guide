@@ -24,7 +24,7 @@
   width: 600px;
   height: 300px;
   border-radius: 999px;
-  background: radial-gradient(circle, var(--orange-glow) 0%, transparent 70%);
+  background: radial-gradient(circle, var(--crimson-glow) 0%, transparent 70%);
   filter: blur(40px);
   pointer-events: none;
   z-index: 1;
@@ -130,7 +130,7 @@
 .cardLangBadge {
   display: inline-flex;
   background: var(--surface-elevated);
-  color: var(--orange);
+  color: var(--crimson);
   border: 1px solid var(--hairline-strong);
   border-radius: 4px;
   font-size: 10px;
@@ -159,9 +159,22 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: var(--blue);
+  color: var(--crimson);
   font-size: 13px;
   font-weight: 600;
+}
+
+/* Per-card accents drawn from the theme palette so each roadmap reads distinctly. */
+.cardLinkKotlin {
+  color: var(--crimson);
+}
+
+.cardLinkGo {
+  color: var(--blue);
+}
+
+.cardLinkAi {
+  color: var(--green);
 }
 
 .cardLink:hover {

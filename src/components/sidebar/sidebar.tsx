@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { BookOpen, Search, Sparkles, Tag, X } from "lucide-react";
 import type { GuideDoc } from "../../generated/guide-data";
 import { useGuideStore, type LanguageFilter } from "../../store/guide-store";
@@ -14,14 +14,13 @@ interface SidebarProps {
 export function Sidebar({ isOpen, onClose, visibleDocs, currentDoc }: SidebarProps) {
   const query = useGuideStore((state) => state.query);
   const language = useGuideStore((state) => state.language);
-  const activeTab = useGuideStore((state) => state.activeTab);
   const setQuery = useGuideStore((state) => state.setQuery);
   const setLanguage = useGuideStore((state) => state.setLanguage);
-  const setActiveTab = useGuideStore((state) => state.setActiveTab);
 
-  // The Guide/Quiz switcher only applies to individual documents, not the
-  // home overview or tag pages.
-  const showTabs = currentDoc.id !== "home" && currentDoc.id !== "tags";
+  // Guide vs. Quiz is route-driven: /quiz is the quiz view, everything else is
+  // the guide. The switcher is shown on every page.
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isQuizActive = pathname.startsWith("/quiz");
 
   // Group docs by category/language
   const docGroups = [
@@ -68,37 +67,29 @@ export function Sidebar({ isOpen, onClose, visibleDocs, currentDoc }: SidebarPro
         </button>
       </div>
 
-      {showTabs && (
-        <div className={styles.tabSwitcher} role="tablist" aria-label="Content Mode">
-          <button
-            className={`${styles.tabBtn} ${activeTab === "guide" ? styles.isTabActive : ""}`}
-            role="tab"
-            aria-selected={activeTab === "guide"}
-            type="button"
-            onClick={() => {
-              setActiveTab("guide");
-              onClose();
-            }}
-          >
-            <BookOpen size={13} />
-            Guide
-          </button>
-          <button
-            className={`${styles.tabBtn} ${activeTab === "quiz" ? styles.isTabActive : ""}`}
-            role="tab"
-            aria-selected={activeTab === "quiz"}
-            type="button"
-            onClick={() => {
-              setActiveTab("quiz");
-              onClose();
-            }}
-          >
-            <Sparkles size={13} />
-            Quiz
-            <span className={styles.tabBadge}>Beta</span>
-          </button>
-        </div>
-      )}
+      <div className={styles.tabSwitcher} role="tablist" aria-label="Content Mode">
+        <Link
+          to="/"
+          className={`${styles.tabBtn} ${!isQuizActive ? styles.isTabActive : ""}`}
+          role="tab"
+          aria-selected={!isQuizActive}
+          onClick={onClose}
+        >
+          <BookOpen size={13} />
+          Guide
+        </Link>
+        <Link
+          to="/quiz"
+          className={`${styles.tabBtn} ${isQuizActive ? styles.isTabActive : ""}`}
+          role="tab"
+          aria-selected={isQuizActive}
+          onClick={onClose}
+        >
+          <Sparkles size={13} />
+          Quiz
+          <span className={styles.tabBadge}>Beta</span>
+        </Link>
+      </div>
 
       <label className={styles.searchBox}>
         <span>
@@ -146,7 +137,7 @@ export function Sidebar({ isOpen, onClose, visibleDocs, currentDoc }: SidebarPro
       <Link
         to="/tags"
         onClick={onClose}
-        className="mb-5 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--mute)] no-underline transition-colors hover:text-[var(--orange)]"
+        className="mb-5 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--mute)] no-underline transition-colors hover:text-[var(--crimson)]"
       >
         <Tag size={13} /> Browse by tag
       </Link>

@@ -45,7 +45,7 @@ export function DocContent({ doc, content }: DocContentProps) {
               >
                 <a
                   href={`#${item.id}`}
-                  className="text-[13.5px] text-[var(--charcoal)] no-underline transition-colors duration-150 hover:text-[var(--orange)]"
+                  className="text-[13.5px] text-[var(--charcoal)] no-underline transition-colors duration-150 hover:text-[var(--crimson)]"
                 >
                   {item.text}
                 </a>
@@ -78,7 +78,7 @@ export function DocContent({ doc, content }: DocContentProps) {
               params={{ docId: prevDoc.id }}
               className="group flex flex-col gap-1.5 rounded-xl border border-[var(--hairline)] bg-[var(--surface-card)] p-4 no-underline transition-colors hover:border-[var(--hairline-strong)] hover:bg-[var(--surface-elevated)]"
             >
-              <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--mute)] transition-colors group-hover:text-[var(--orange)]">
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--mute)] transition-colors group-hover:text-[var(--crimson)]">
                 <ArrowLeft size={13} /> 이전 페이지
               </span>
               <span className="text-[14px] font-medium leading-snug text-[var(--ink)]">
@@ -95,7 +95,7 @@ export function DocContent({ doc, content }: DocContentProps) {
               params={{ docId: nextDoc.id }}
               className="group flex flex-col items-end gap-1.5 rounded-xl border border-[var(--hairline)] bg-[var(--surface-card)] p-4 text-right no-underline transition-colors hover:border-[var(--hairline-strong)] hover:bg-[var(--surface-elevated)]"
             >
-              <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--mute)] transition-colors group-hover:text-[var(--orange)]">
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--mute)] transition-colors group-hover:text-[var(--crimson)]">
                 다음 페이지 <ArrowRight size={13} />
               </span>
               <span className="text-[14px] font-medium leading-snug text-[var(--ink)]">

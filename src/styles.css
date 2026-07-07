@@ -33,8 +33,8 @@ html {
   --surface-deep: #06060a;
   --hairline: rgba(255, 255, 255, 0.06);
   --hairline-strong: rgba(255, 255, 255, 0.14);
-  --orange: #ff801f;
-  --orange-glow: rgba(255, 89, 0, 0.22);
+  --crimson: #e8637a;
+  --crimson-glow: rgba(220, 38, 66, 0.2);
   --blue: #3b9eff;
   --blue-glow: rgba(0, 117, 255, 0.34);
   --green: #11ff99;
@@ -63,7 +63,7 @@ body {
   min-width: 320px;
   margin: 0;
   background:
-    radial-gradient(circle at 20% 8%, var(--orange-glow), transparent 28rem),
+    radial-gradient(circle at 20% 8%, var(--crimson-glow), transparent 28rem),
     radial-gradient(circle at 84% 4%, var(--blue-glow), transparent 24rem),
     linear-gradient(180deg, #000 0%, #050506 44%, #000 100%);
   color: var(--body);
@@ -146,7 +146,7 @@ a:focus-visible {
   border: 1px solid var(--hairline);
   border-radius: 12px;
   background:
-    linear-gradient(135deg, rgba(255, 128, 31, 0.08), transparent 52%), var(--surface-card);
+    linear-gradient(135deg, rgba(232, 99, 122, 0.08), transparent 52%), var(--surface-card);
   padding: 20px;
 }
 
@@ -306,7 +306,7 @@ a:focus-visible {
 }
 
 .breadcrumb-lang {
-  color: var(--orange);
+  color: var(--crimson);
 }
 
 .topbar-right {
@@ -353,9 +353,9 @@ a:focus-visible {
   font-size: 9px;
   font-weight: 700;
   text-transform: uppercase;
-  background: var(--orange-glow);
-  color: var(--orange);
-  border: 1px solid rgba(255, 128, 31, 0.2);
+  background: var(--crimson-glow);
+  color: var(--crimson);
+  border: 1px solid rgba(232, 99, 122, 0.2);
   border-radius: 4px;
   padding: 1px 4px;
   margin-left: 2px;
@@ -475,7 +475,7 @@ a:focus-visible {
 .markdown-body blockquote {
   margin: 24px 0;
   border: 1px solid var(--hairline);
-  border-left: 3px solid var(--orange);
+  border-left: 3px solid var(--crimson);
   border-radius: 8px;
   background: var(--surface-card);
   padding: 4px 20px;
@@ -499,7 +499,7 @@ code {
   border: 1px solid var(--hairline);
   border-radius: 6px;
   background: var(--surface-card);
-  color: var(--orange);
+  color: var(--crimson);
   padding: 2px 6px;
   font-family: "Geist Mono", "SFMono-Regular", Consolas, monospace;
   font-size: 0.9em;
@@ -661,7 +661,7 @@ tr:last-child td {
 }
 
 .quiz-difficulty {
-  color: var(--orange);
+  color: var(--crimson);
 }
 
 .quiz-q-title {
@@ -765,9 +765,9 @@ tr:last-child td {
   border-radius: 16px;
   background: var(--surface-elevated);
   border: 1px solid var(--hairline-strong);
-  color: var(--orange);
+  color: var(--crimson);
   margin-bottom: 24px;
-  box-shadow: 0 0 32px var(--orange-glow);
+  box-shadow: 0 0 32px var(--crimson-glow);
 }
 
 .coming-soon-content h3 {

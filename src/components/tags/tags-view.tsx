@@ -45,7 +45,7 @@ export function TagsIndex() {
             key={tag}
             to="/tags/$tag"
             params={{ tag }}
-            className="inline-flex items-center gap-2 rounded-full border border-[var(--hairline-strong)] bg-[var(--surface-card)] py-2 pl-3.5 pr-2.5 text-[13.5px] text-[var(--body)] no-underline transition-colors hover:border-[var(--orange)] hover:text-[var(--orange)]"
+            className="inline-flex items-center gap-2 rounded-full border border-[var(--hairline-strong)] bg-[var(--surface-card)] py-2 pl-3.5 pr-2.5 text-[13.5px] text-[var(--body)] no-underline transition-colors hover:border-[var(--crimson)] hover:text-[var(--crimson)]"
           >
             <TagIcon size={13} className="text-[var(--ash)]" />
             {tag}
@@ -81,13 +81,13 @@ export function TagDetail({ tag }: { tag: string }) {
     <div className="doc-content">
       <Link
         to="/tags"
-        className="mb-6 inline-flex items-center gap-1.5 text-[13px] font-medium text-[var(--mute)] no-underline transition-colors hover:text-[var(--orange)]"
+        className="mb-6 inline-flex items-center gap-1.5 text-[13px] font-medium text-[var(--mute)] no-underline transition-colors hover:text-[var(--crimson)]"
       >
         <ArrowLeft size={14} /> 전체 태그
       </Link>
 
       <h1 className="m-0 flex items-center gap-2.5 text-[40px] font-normal leading-[1.05] text-[var(--ink)]" style={displayFont}>
-        <TagIcon size={30} className="text-[var(--orange)]" />
+        <TagIcon size={30} className="text-[var(--crimson)]" />
         {tag}
       </h1>
       <p className="m-0 mb-8 mt-3 text-[15px] text-[var(--charcoal)]">
@@ -108,7 +108,7 @@ export function TagDetail({ tag }: { tag: string }) {
               <span className="text-[16px] font-semibold text-[var(--ink)]">{doc.title}</span>
               <ChevronRight
                 size={16}
-                className="shrink-0 text-[var(--stone)] transition-colors group-hover:text-[var(--orange)]"
+                className="shrink-0 text-[var(--stone)] transition-colors group-hover:text-[var(--crimson)]"
               />
             </div>
             <span className="text-[13.5px] leading-[1.5] text-[var(--mute)]">{doc.summary}</span>
