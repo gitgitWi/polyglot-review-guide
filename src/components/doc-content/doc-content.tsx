@@ -1,5 +1,7 @@
+import { useRef } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { MermaidRenderer } from "../mermaid";
 import { TagPills } from "../tags/tag-pills";
 import {
   guideDocs,
@@ -21,6 +23,7 @@ const orderedDocs = [...guideDocs].sort((a, b) => a.order - b.order);
  * HTML and the build-time ToC — no markdown/highlight engine ships to the client.
  */
 export function DocContent({ doc, content }: DocContentProps) {
+  const bodyRef = useRef<HTMLDivElement>(null);
   const currentIndex = orderedDocs.findIndex((d) => d.id === doc.id);
   const prevDoc = currentIndex > 0 ? orderedDocs[currentIndex - 1] : null;
   const nextDoc =
@@ -56,10 +59,12 @@ export function DocContent({ doc, content }: DocContentProps) {
       )}
 
       <div
+        ref={bodyRef}
         className="markdown-body"
         dangerouslySetInnerHTML={{ __html: content.html }}
         suppressHydrationWarning
       />
+      <MermaidRenderer containerRef={bodyRef} html={content.html} />
 
       {doc.tags.length > 0 && (
         <div className="mt-12 pt-8 border-t border-[var(--hairline)]">
