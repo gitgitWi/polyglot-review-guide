@@ -573,6 +573,49 @@ tr:last-child td {
   border-bottom: 0;
 }
 
+/* Mermaid diagrams — rendered client-side into these containers (see
+   MermaidRenderer). The empty state reserves height so layout doesn't jump when
+   the SVG swaps in after the mermaid chunk loads. */
+.mermaid-diagram {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 24px 0;
+  padding: 24px 20px;
+  overflow-x: auto;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 12px;
+  background: var(--surface-deep);
+}
+
+.mermaid-diagram:not([data-rendered]) {
+  min-height: 120px;
+  position: relative;
+}
+
+.mermaid-diagram:not([data-rendered])::after {
+  content: "다이어그램 로딩 중…";
+  color: var(--ash);
+  font-size: 12px;
+  letter-spacing: 0.03em;
+}
+
+.mermaid-diagram svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.mermaid-error {
+  width: 100%;
+  margin: 0;
+  padding: 16px;
+  overflow-x: auto;
+  color: var(--crimson);
+  font-family: "Geist Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
 /* Sidebar structure details */
 .sidebar-header {
   display: flex;

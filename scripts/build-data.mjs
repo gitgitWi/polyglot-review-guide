@@ -112,6 +112,12 @@ function createMarked() {
       if (token.type !== "code") {
         return;
       }
+      // Mermaid diagrams render client-side (see MermaidRenderer). Leave the
+      // source untouched so the `code` renderer can emit a diagram container
+      // instead of a Shiki-highlighted block.
+      if ((token.lang || "").trim().toLowerCase() === "mermaid") {
+        return;
+      }
       const lang = LANG_ALIASES[(token.lang || "").trim().toLowerCase()] ?? "text";
       try {
         token.highlighted = await codeToHtml(token.text, { lang, theme: SHIKI_THEME });
@@ -121,6 +127,12 @@ function createMarked() {
     },
     renderer: {
       code(token) {
+        // Mermaid: emit an empty container carrying the source in a data
+        // attribute. MermaidRenderer decodes it and swaps in the rendered SVG
+        // client-side, so no raw diagram markup flashes before hydration.
+        if ((token.lang || "").trim().toLowerCase() === "mermaid") {
+          return `<div class="mermaid-diagram" data-mermaid="${encodeURIComponent(token.text)}"></div>`;
+        }
         const label = (token.lang || "text").trim() || "text";
         const body = token.highlighted ?? `<pre class="shiki"><code>${escapeHtml(token.text)}</code></pre>`;
         return `<div class="code-frame"><div class="code-label"><span>${escapeHtml(label)}</span></div>${body}</div>`;

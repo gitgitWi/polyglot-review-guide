@@ -83,6 +83,26 @@ export const guideDocs: GuideDoc[] = [
     "wordCount": 876
   },
   {
+    "id": "oop-comparison",
+    "file": "025-oop-comparison.md",
+    "title": "객체지향 모델링: 클래스 · 가시성 · 상속 · 다형성",
+    "category": "types",
+    "language": "both",
+    "order": 2.5,
+    "summary": "TypeScript의 class 감각을 기준으로 Kotlin의 명목적 클래스 기반 OOP와 Go의 클래스 없는 합성 모델을 대조합니다. 접근 제어자(private/protected/internal), 상속 대 합성, 인터페이스, 봉인 계층과 다형성을 한 문서에 모았습니다.",
+    "tags": [
+      "oop",
+      "visibility",
+      "inheritance",
+      "composition",
+      "interfaces",
+      "polymorphism",
+      "data-modeling",
+      "type-system"
+    ],
+    "wordCount": 2534
+  },
+  {
     "id": "functions-control-flow",
     "file": "03-functions-control-flow.md",
     "title": "Functions and Control Flow",
@@ -270,6 +290,7 @@ const contentLoaders: Record<string, () => Promise<{ default: DocContent }>> = {
   "overview": () => import("./bodies/overview"),
   "syntax-map": () => import("./bodies/syntax-map"),
   "types-and-modeling": () => import("./bodies/types-and-modeling"),
+  "oop-comparison": () => import("./bodies/oop-comparison"),
   "functions-control-flow": () => import("./bodies/functions-control-flow"),
   "async-concurrency": () => import("./bodies/async-concurrency"),
   "validation-errors": () => import("./bodies/validation-errors"),
