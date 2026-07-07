@@ -2,30 +2,26 @@ import { create } from "zustand";
 import { guideDocs, type GuideDoc } from "../generated/guide-data";
 
 export type LanguageFilter = "all" | "kotlin" | "go" | "both";
-export type ContentTab = "guide" | "quiz";
 
 type GuideState = {
   query: string;
   language: LanguageFilter;
-  activeTab: ContentTab;
   isSidebarOpen: boolean;
   setQuery: (query: string) => void;
   setLanguage: (language: LanguageFilter) => void;
-  setActiveTab: (tab: ContentTab) => void;
   setSidebarOpen: (open: boolean) => void;
 };
 
 // Cross-component UI state. The shell (Sidebar/Topbar) lives at the route root
-// while page content renders in the <Outlet/>, so search/language/tab/drawer
-// state is shared here rather than threaded through props.
+// while page content renders in the <Outlet/>, so search/language/drawer state
+// is shared here rather than threaded through props. (Guide vs. Quiz is now a
+// route — /quiz — rather than in-place state.)
 export const useGuideStore = create<GuideState>((set) => ({
   query: "",
   language: "all",
-  activeTab: "guide",
   isSidebarOpen: false,
   setQuery: (query) => set({ query }),
   setLanguage: (language) => set({ language }),
-  setActiveTab: (activeTab) => set({ activeTab }),
   setSidebarOpen: (isSidebarOpen) => set({ isSidebarOpen }),
 }));
 

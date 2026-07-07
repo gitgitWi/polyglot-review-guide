@@ -26,8 +26,8 @@ export function TagPills({ tags, activeTag, onNavigate }: TagPillsProps) {
             onClick={onNavigate}
             className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[12px] no-underline transition-colors ${
               isActive
-                ? "border-[var(--orange)] bg-[var(--orange-glow)] text-[var(--orange)]"
-                : "border-[var(--hairline-strong)] bg-[var(--surface-card)] text-[var(--charcoal)] hover:border-[var(--orange)] hover:text-[var(--orange)]"
+                ? "border-[var(--crimson)] bg-[var(--crimson-glow)] text-[var(--crimson)]"
+                : "border-[var(--hairline-strong)] bg-[var(--surface-card)] text-[var(--charcoal)] hover:border-[var(--crimson)] hover:text-[var(--crimson)]"
             }`}
           >
             <TagIcon size={11} />

@@ -5,8 +5,6 @@ import { filterDocs, useGuideStore } from "../../store/guide-store";
 import { Sidebar } from "../sidebar";
 import { Topbar } from "../topbar";
 
-const totalWordCount = guideDocs.reduce((acc, doc) => acc + doc.wordCount, 0);
-
 export interface ShellDoc {
   id: string;
   title: string;
@@ -22,12 +20,15 @@ function deriveCurrentDoc(pathname: string): ShellDoc {
       return { id: doc.id, title: doc.title, wordCount: doc.wordCount };
     }
   }
+  if (pathname.startsWith("/quiz")) {
+    return { id: "quiz", title: "Review Quiz", wordCount: 0 };
+  }
   if (pathname === "/tags" || pathname.startsWith("/tags/")) {
     const rest = pathname.slice("/tags".length).replace(/^\/+/, "").replace(/\/+$/, "");
     const tag = rest ? decodeURIComponent(rest) : "";
     return { id: "tags", title: tag ? `#${tag}` : "Tags", wordCount: 0 };
   }
-  return { id: "home", title: "Polyglot Guide", wordCount: totalWordCount };
+  return { id: "home", title: "Polyglot Guide", wordCount: 0 };
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -36,7 +37,6 @@ export function AppShell({ children }: { children: ReactNode }) {
   const query = useGuideStore((s) => s.query);
   const language = useGuideStore((s) => s.language);
   const isSidebarOpen = useGuideStore((s) => s.isSidebarOpen);
-  const setActiveTab = useGuideStore((s) => s.setActiveTab);
   const setSidebarOpen = useGuideStore((s) => s.setSidebarOpen);
 
   const [isShrunk, setIsShrunk] = useState(false);
@@ -51,15 +51,12 @@ export function AppShell({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Reset transient UI state on navigation; the quiz tab only applies to docs.
+  // Reset transient UI state on navigation.
   useEffect(() => {
     setSidebarOpen(false);
     setIsShrunk(false);
-    if (!pathname.startsWith("/guide/")) {
-      setActiveTab("guide");
-    }
     window.scrollTo(0, 0);
-  }, [pathname, setSidebarOpen, setActiveTab]);
+  }, [pathname, setSidebarOpen]);
 
   return (
     <div className="app-shell">
