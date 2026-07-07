@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Search, Tag, X } from "lucide-react";
+import { BookOpen, Search, Sparkles, Tag, X } from "lucide-react";
 import type { GuideDoc } from "../../generated/guide-data";
 import { useGuideStore, type LanguageFilter } from "../../store/guide-store";
 import styles from "./sidebar.module.css";
@@ -14,8 +14,14 @@ interface SidebarProps {
 export function Sidebar({ isOpen, onClose, visibleDocs, currentDoc }: SidebarProps) {
   const query = useGuideStore((state) => state.query);
   const language = useGuideStore((state) => state.language);
+  const activeTab = useGuideStore((state) => state.activeTab);
   const setQuery = useGuideStore((state) => state.setQuery);
   const setLanguage = useGuideStore((state) => state.setLanguage);
+  const setActiveTab = useGuideStore((state) => state.setActiveTab);
+
+  // The Guide/Quiz switcher only applies to individual documents, not the
+  // home overview or tag pages.
+  const showTabs = currentDoc.id !== "home" && currentDoc.id !== "tags";
 
   // Group docs by category/language
   const docGroups = [
@@ -61,6 +67,38 @@ export function Sidebar({ isOpen, onClose, visibleDocs, currentDoc }: SidebarPro
           <X size={20} />
         </button>
       </div>
+
+      {showTabs && (
+        <div className={styles.tabSwitcher} role="tablist" aria-label="Content Mode">
+          <button
+            className={`${styles.tabBtn} ${activeTab === "guide" ? styles.isTabActive : ""}`}
+            role="tab"
+            aria-selected={activeTab === "guide"}
+            type="button"
+            onClick={() => {
+              setActiveTab("guide");
+              onClose();
+            }}
+          >
+            <BookOpen size={13} />
+            Guide
+          </button>
+          <button
+            className={`${styles.tabBtn} ${activeTab === "quiz" ? styles.isTabActive : ""}`}
+            role="tab"
+            aria-selected={activeTab === "quiz"}
+            type="button"
+            onClick={() => {
+              setActiveTab("quiz");
+              onClose();
+            }}
+          >
+            <Sparkles size={13} />
+            Quiz
+            <span className={styles.tabBadge}>Beta</span>
+          </button>
+        </div>
+      )}
 
       <label className={styles.searchBox}>
         <span>
