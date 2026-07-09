@@ -169,6 +169,15 @@ if err := g.Wait(); err != nil { // 모든 고루틴 완료 대기 + 첫 에러 
 - **고루틴 누수(Goroutine Leak) 방지**: 조건 불만족으로 영구히 종료되지 않는 좀비 고루틴이 없는지, 상위 컨텍스트 취소·타임아웃 시 내부 루프도 즉시 중단되도록 가드가 있는지 확인합니다.
 - **채널 데드락 제어**: 수신자가 없거나 버퍼가 가득 차 송신부가 영구 차단되는 교착 가능성을, 채널 버퍼 크기와 클로즈 수명 주기로 점검합니다.
 
+> [!NOTE]
+> **머신당 동시성의 실전 임팩트** — 고루틴의 "저렴한 동시성"이 규모에서 무엇을 바꾸는지는 최근 대형 서비스들이 Python/Node.js 백엔드를 Go로 옮긴 사례에서 드러납니다. 아래는 각 회사의 공식 엔지니어링 기록에 근거한 수치입니다.
+>
+> - **Reddit** — 코어 도메인(Comments·Accounts·Posts·Subreddits) 중 **댓글 백엔드**를 Go 마이크로서비스로 이전. 반복되던 신뢰성·성능 저하와 불명확한 코드 소유권이 동기였고, 이관한 세 write 엔드포인트(생성·수정·증가)의 P99 레이턴시가 절반으로 감소 — 레거시 Python이 겪던 최대 15초의 지연 스파이크를 걷어냈습니다. ([Reddit Eng](https://www.reddit.com/r/RedditEng/comments/1mbqto6/modernizing_reddits_comment_backend_infrastructure/))
+> - **Lovable** — 한 번의 채팅 요청이 50개 이상의 HTTP 콜을 동시에 날리는 고동시성 워크로드. Python 약 4.2만 줄을 Go로 재작성한 뒤 서버 인스턴스 200개 → 10개, 배포 15분 → 3분, 평균 요청 약 12% 단축. ([Lovable Blog](https://lovable.dev/blog/from-python-to-go))
+> - **Uber** — 대규모 서비스(청구서 생성)를 Python에서 Go로 이전. "같은 트래픽을 처리하면서 수백 대의 노드를 반납"해 해당 서비스의 컴퓨트 요구량을 약 97% 절감했고, 엔지니어의 지원 업무 비중이 60% → 20% 미만으로 줄었습니다. 사내에서 "Python은 더 이상 백엔드 지원 언어가 아니다"라는 방침이 전환의 계기였습니다. ([Uber Eng](https://www.uber.com/blog/the-perils-of-migrating-a-large-scale-service-at-uber/))
+>
+> 공통 동인은 성능 그 자체가 아니라 **머신당 동시 처리량(concurrency per machine)** 입니다. 앞서 본 요청당 스레드(thread-per-request) 모델이나 단일 스레드 이벤트 루프가 감당하던 부하를, 고루틴은 훨씬 적은 자원으로 소화합니다. 다만 리뷰어 관점에서 이 이점은 앞서 짚은 **고루틴 누수·컨텍스트 취소·채널 데드락**을 제대로 통제했을 때에만 유지된다는 점을 기억하세요. (네 사례의 종합 개관: [The Real Reason Big Tech Is Switching to Go](https://www.youtube.com/watch?v=-Z813pHqSFI))
+
 ## 병렬 실행 패턴 매핑
 
 같은 "동시에 시작하고 모두 기다리기"가 언어마다 어떻게 표현되는지 대응시켜 두면 리뷰가 빨라집니다.

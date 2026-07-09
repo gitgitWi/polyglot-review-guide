@@ -44,7 +44,7 @@ export const guideDocs: GuideDoc[] = [
       "roadmap",
       "runtime-model"
     ],
-    "wordCount": 916
+    "wordCount": 1167
   },
   {
     "id": "syntax-map",
@@ -139,7 +139,7 @@ export const guideDocs: GuideDoc[] = [
       "structured-concurrency",
       "parallelism"
     ],
-    "wordCount": 1815
+    "wordCount": 2030
   },
   {
     "id": "validation-errors",
